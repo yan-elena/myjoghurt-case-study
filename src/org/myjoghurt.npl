@@ -1,3 +1,9 @@
 scope main {
+    // this norm is activated when the unit_agent receive the request with the liquid and amount
+    norm n1: order(U_AG, L, N) & relation(U_AG, P_AG, V_AG)
+        -> obligation(U_AG, n1, filling_process(L, N, P_AG, V_AG), `5 seconds`)
+        if unfulfilled: s0(V_AG, U_AG).
 
+    sanction-rule s0(A1, A2) //: factors(P, M)
+        -> obligation(A, true, update_image(A1, A2, P, M), `2 seconds`) .
 }
