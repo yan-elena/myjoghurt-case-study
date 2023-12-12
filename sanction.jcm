@@ -1,5 +1,8 @@
 mas sanction_demo {
 
     agent karlos
+    agent unit
+    agent plant
+    agent valve
 
 }
