@@ -14,6 +14,7 @@
        listen(AId)[artifact_id(SArt)]; // ps1 get normative events (including sanctions) from nb1
        .wait(1000);
 
+       removeFact(order(unit, "yogurt", 20));
        .
 
 +oblUnfulfilled(O) <- .print("Unfulfilled ",O).
