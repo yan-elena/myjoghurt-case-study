@@ -1,20 +1,13 @@
 !start.
 
 +!start : true
-    <- makeArtifact(nb1,"ora4mas.nopl.NormativeBoard",[],AId);
-       focus(AId);
-       debug(inspector_gui(on));
+    <- debug(inspector_gui(on));
        load("src/org/myjoghurt.npl");
-
 
        addFact(relation(unit, plant, valve));
        addFact(order(unit, "yogurt", 20));
 
-       makeArtifact(ps1,"police.Sanctioner",[],SArt);
-        .println("aid: ", AId, " sart: ", SArt);
-       listen(AId)[artifact_id(SArt)]; // ps1 get normative events (including sanctions) from nb1
        .wait(5000);
-
 
        removeFact(order(unit, "yogurt", 20));
        .
@@ -25,12 +18,9 @@
 
 // obligation to achieve a goal
 
-+obligation(Ag,Norm,What,Deadline)[artifact_id(ArtId),norm(_,Un)]
-    : .my_name(Ag) // & (satisfied(Scheme,Goal)=What | done(Scheme,Goal,Ag)=What)
-   <- //.member(["M",Mission],Un);
-      .print(" ---> working to achieve ",What," in scheme ",Scheme," mission ",Mission, " artId: ", ArtId);
++obligation(Ag,Norm,What,Deadline)[artifact_id(ArtId),norm(_,Un)]: .my_name(Ag)
+   <- .print(" ---> working to achieve ",What," in scheme ",Scheme," mission ",Mission, " artId: ", ArtId);
       !What;
-      //goalAchieved(What)[artifact_id(ArtId)];
       .print(" <--- done");
       .
 

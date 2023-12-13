@@ -1,8 +1,27 @@
 mas sanction_demo {
 
-    agent karlos
-    agent unit
-    agent plant
-    agent valve
+    agent karlos {
+        join: filling_station
+        focus: norm_board, sanctioner
+    }
+
+    agent unit {
+        join: filling_station
+        focus: norm_board
+    }
+
+    agent plant {
+       join: filling_station
+       focus: norm_board
+    }
+    agent valve {
+       join: filling_station
+       focus: norm_board
+    }
+
+    workspace filling_station {
+        artifact norm_board: ora4mas.nopl.NormativeBoard()
+        artifact sanctioner: police.Sanctioner
+    }
 
 }
