@@ -5,10 +5,10 @@
 
 +sanction(NormId,Event,Sanction) <- .print("Sanction ",Sanction," created for norm ", NormId, " that is ",Event).
 
-+fill_bottle(L, N)
-    <-  removeFact(filled(L, N));
-        addFact(fill_bottle(L, N + 1));
-        addFact(filled(U, L, N + 1)).
++!fill_bottle(L, N)
+    <-  removeFact(filled(L, N - 1));
+        addFact(filled(L, N));
+        .println("fill bottle ...").
 
 
 // obligation to achieve a goal

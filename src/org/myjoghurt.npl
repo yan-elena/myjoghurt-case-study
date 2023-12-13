@@ -4,17 +4,13 @@ scope main {
         -> obligation(U, n1, filling_process(L, N, P, V), false).
 
 
-    norm n2: filled(L, N1) & order(U, L, N2) & N1 \== N2 & relation(U, P, V)
-        -> obligation(V, n2, fill_bottle(L, N1 + 1), `2 seconds`).
-
-        //if fulfilled: s0(V_AG, U_AG)
+    norm n2: filled(L, N1) & order(U, L, N2) & N1 < N2 & relation(U, P, V)
+        -> obligation(V, n2, fill_bottle(L, N1 + 1), false)
+        //if fulfilled: s0(V)
         //if unfulfilled: s1(U_AG).
 
-
-
-
-    sanction-rule s0(A1, A2)
-        -> sanction(A1, update_image(A1, A2)).
+    sanction-rule s0(A)
+        -> sanction(A, update_image(A)).
 
     sanction-rule s1(A2)
         -> sanction(A1, remove(A1, A2)).
