@@ -1,7 +1,7 @@
 scope main {
     // this norm is activated when the unit_agent receive the request with the liquid and amount
     norm n1: order(U_AG, L, N) & relation(U_AG, P_AG, V_AG)
-        -> obligation(karlos, n1, filling_process(L, N, P_AG, V_AG), `3 seconds`)
+        -> obligation(U_AG, n1, filling_process(L, N, P_AG, V_AG), `3 seconds`)
         if fulfilled: s0(V_AG, U_AG)
         if unfulfilled: s1(U_AG).
 

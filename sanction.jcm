@@ -1,22 +1,22 @@
 mas sanction_demo {
 
-    agent karlos {
+    agent bottle {
         join: filling_station
         focus: norm_board, sanctioner
     }
 
     agent unit {
         join: filling_station
-        focus: norm_board
+        focus: norm_board, sanctioner
     }
 
     agent plant {
        join: filling_station
-       focus: norm_board
+       focus: norm_board, sanctioner
     }
     agent valve {
        join: filling_station
-       focus: norm_board
+       focus: norm_board, sanctioner
     }
 
     workspace filling_station {

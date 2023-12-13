@@ -1,18 +1,17 @@
 !start.
 
 +!start
-    <- .println("unit agent started") .
+    <- addFact(relation(unit, plant, valve));
+       .println("unit agent started") .
 
-+filling_process(L, N, P_AG, V_AG)
-    <- .println("filling process ", L, N, P_AG, V_AG) .
++!filling_process(L, N, P_AG, V_AG)
+    <- .println("start filling process...");
+       addFact(filling_process(L, N, P_AG, V_AG)).
 
 // obligation to achieve a goal
-+obligation(Ag,Norm,What,Deadline)[artifact_id(ArtId),norm(_,Un)]
-    : .my_name(Ag) & (satisfied(Scheme,Goal)=What | done(Scheme,Goal,Ag)=What)
-   <- .member(["M",Mission],Un);
++obligation(Ag,Norm,What,Deadline)[artifact_id(ArtId),norm(_,Un)]: .my_name(Ag)
+   <- .print(" ---> working to achieve ",What);
       !What;
-      .print(" ---> working to achieve ",Goal," in scheme ",Scheme," mission ",Mission);
-      !fulfill_obligation(Scheme,Goal,ArtId,Mission);
       .print(" <--- done");
       .
 
