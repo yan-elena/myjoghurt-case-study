@@ -5,8 +5,10 @@
        .println("unit agent started") .
 
 +!filling_process(L, N, P_AG, V_AG)
-    <- .println("start filling process...");
-       addFact(filling_process(L, N, P_AG, V_AG)).
+    <- .my_name(U);
+       .println("start filling process...");
+       addFact(filling_process(L, N, P_AG, V_AG));
+       addFact(filled(L, 0)).
 
 // obligation to achieve a goal
 +obligation(Ag,Norm,What,Deadline)[artifact_id(ArtId),norm(_,Un)]: .my_name(Ag)
