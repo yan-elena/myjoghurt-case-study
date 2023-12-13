@@ -6,13 +6,13 @@ scope main {
 
     norm n2: filled(L, N1) & order(U, L, N2) & N1 < N2 & relation(U, P, V)
         -> obligation(V, n2, fill_bottle(L, N1 + 1), false)
-        //if fulfilled: s0(V)
-        //if unfulfilled: s1(U_AG).
+        if fulfilled: s0(U, V)
+        if unfulfilled: s0(U, V), s1(U, V).
 
-    sanction-rule s0(A)
-        -> sanction(A, update_image(A)).
+    sanction-rule s0(U, V)
+        -> sanction(U, update_image(V)).
 
-    sanction-rule s1(A2)
-        -> sanction(A1, remove(A1, A2)).
+    sanction-rule s1(U, V)
+        -> sanction(U, cleaning(V)).
 
 }

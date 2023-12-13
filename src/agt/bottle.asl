@@ -4,11 +4,14 @@
     <- debug(inspector_gui(on));
        load("src/org/myjoghurt.npl");
 
-       addFact(order(unit, "yogurt", 20));
+       //todo
+       //listen(Id)[artifact_id(SArt)];
+
+       addFact(order(unit, "yogurt", 3));
 
        .wait(5000);
 
-       removeFact(order(unit, "yogurt", 20));
+       removeFact(order(unit, "yogurt", 3));
        .
 
 // obligation to achieve a goal
