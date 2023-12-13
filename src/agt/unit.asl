@@ -1,11 +1,25 @@
 !start.
 
-+!start : true
++!start
     <- .println("unit agent started") .
-    
+
++filling_process(L, N, P_AG, V_AG)
+    <- .println("filling process ", L, N, P_AG, V_AG) .
+
+// obligation to achieve a goal
++obligation(Ag,Norm,What,Deadline)[artifact_id(ArtId),norm(_,Un)]
+    : .my_name(Ag) & (satisfied(Scheme,Goal)=What | done(Scheme,Goal,Ag)=What)
+   <- .member(["M",Mission],Un);
+      !What;
+      .print(" ---> working to achieve ",Goal," in scheme ",Scheme," mission ",Mission);
+      !fulfill_obligation(Scheme,Goal,ArtId,Mission);
+      .print(" <--- done");
+      .
+
++sanction(NormId,Event,Sanction) <- .print("Sanction ",Sanction," created for norm ", NormId, " that is ",Event).
     
 { include("$jacamo/templates/common-cartago.asl") }
 { include("$jacamo/templates/common-moise.asl") }
 
 // uncomment the include below to have an agent compliant with its organisation
-//{ include("$moise/asl/org-obedient.asl") }
+{ include("$moise/asl/org-obedient.asl") }
