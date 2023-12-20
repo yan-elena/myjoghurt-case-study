@@ -3,10 +3,10 @@
 +!start : true
     <- .println("plant agent started") .
 
-+sanction(NormId,Event,Sanction) <- .print("Sanction ",Sanction," created for norm ", NormId, " that is ",Event).
-    
-{ include("$jacamo/templates/common-cartago.asl") }
-{ include("$jacamo/templates/common-moise.asl") }
++unfulfilled(O) <- .print("Unfulfilled ",O).
 
-// uncomment the include below to have an agent compliant with its organisation
-{ include("$moise/asl/org-obedient.asl") }
++sanction(Ag,remove_from_systems)
+   <- .println("**** I am implementing the sanction for ",Ag," ****").
+
++sanction(Ag,Sanction)[norm(NormId,Event)]
+   <- .print("Sanction ",Sanction," for ",Ag," created from norm ", NormId, " that is ",Event).

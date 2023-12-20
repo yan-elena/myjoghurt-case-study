@@ -4,22 +4,15 @@
     <- .println("valve agent started") .
 
 +!fill_bottle(L, N)
-    <-  removeFact(filled(L, N - 1));
-        addFact(filled(L, N));
+    <-  -filled(L, N - 1);
+        +filled(L, N);
         .println("fill bottle ...").
 
 
-// obligation to achieve a goal
-+obligation(Ag,Norm,What,Deadline)[artifact_id(ArtId),norm(_,Un)]: .my_name(Ag)
-   <- .print(" ---> working to achieve ",What);
-      !What;
-      .print(" <--- done");
-      .
++unfulfilled(O) <- .print("Unfulfilled ",O).
 
-+sanction(NormId,Event,Sanction) <- .print("Sanction ",Sanction," created for norm ", NormId, " that is ",Event).
++sanction(Ag,remove_from_systems)
+   <- .println("**** I am implementing the sanction for ",Ag," ****").
 
-{ include("$jacamo/templates/common-cartago.asl") }
-{ include("$jacamo/templates/common-moise.asl") }
-
-// uncomment the include below to have an agent compliant with its organisation
-{ include("$moise/asl/org-obedient.asl") }
++sanction(Ag,Sanction)[norm(NormId,Event)]
+   <- .print("Sanction ",Sanction," for ",Ag," created from norm ", NormId, " that is ",Event).

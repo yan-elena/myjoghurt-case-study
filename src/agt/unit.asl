@@ -1,26 +1,30 @@
 !start.
 
 +!start
-    <- addFact(relation(unit, plant, valve));
+    <- //debug(inspector_gui(on));
+        +relation(unit, plant, valve);
        .println("unit agent started") .
 
-+!filling_process(L, N, P_AG, V_AG)
-    <- .my_name(U);
-       .println("start filling process...");
-       addFact(filling_process(L, N, P_AG, V_AG));
-       addFact(filled(L, 0)).
++filling_process(L, N)
+    <- .println("filling process - liquid: ", L, " quantity: ",  N).
 
-// obligation to achieve a goal
-+obligation(Ag,Norm,What,Deadline)[artifact_id(ArtId),norm(_,Un)]: .my_name(Ag)
++!filling_process(L, N)
+    <- .println("filling process - liquid: ", L, " quantity: ",  N).
+
+
++obligation(Ag,Norm,What,Deadline) : .my_name(Ag)
    <- .print(" ---> working to achieve ",What);
       !What;
       .print(" <--- done");
       .
 
-+sanction(NormId,Event,Sanction) <- .print("Sanction ",Sanction," created for norm ", NormId, " that is ",Event).
-    
-{ include("$jacamo/templates/common-cartago.asl") }
-{ include("$jacamo/templates/common-moise.asl") }
++unfulfilled(O) <- .print("Unfulfilled ",O).
 
-// uncomment the include below to have an agent compliant with its organisation
-{ include("$moise/asl/org-obedient.asl") }
++sanction(Ag,update_image)
+   <- .println("**** I am implementing the sanction for ",Ag," ****").
+
++sanction(Ag,Sanction)[norm(NormId,Event)]
+   <- .print("Sanction ",Sanction," for ",Ag," created from norm ", NormId, " that is ",Event).
+
+
+{ include("$jacamo/templates/common-cartago.asl") }

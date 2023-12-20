@@ -1,0 +1,9 @@
+scope unit_norms {
+
+    norm n1: order(U, L, N)
+        -> obligation(U, n1, filling_process(L, N), `5 seconds`)
+        if unfulfilled: s0(U).
+
+     sanction-rule s0(U)
+            -> sanction(U, update_image).
+}

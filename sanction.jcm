@@ -1,27 +1,15 @@
 mas sanction_demo {
 
-    agent bottle {
-        join: filling_station
-        focus: norm_board, sanctioner
-    }
+    agent bottle
 
     agent unit {
-        join: filling_station
-        focus: norm_board, sanctioner
+        ag-class: npl.NormativeAg("src/org/unit_norms.npl")
     }
 
-    agent plant {
-       join: filling_station
-       focus: norm_board, sanctioner
-    }
-    agent valve {
-       join: filling_station
-       focus: norm_board, sanctioner
-    }
+    agent plant
+    //{
+    //   ag-class: npl.NormativeAg("src/org/myjoghurt.npl")
+    //}
 
-    workspace filling_station {
-        artifact norm_board: ora4mas.nopl.NormativeBoard()
-        artifact sanctioner: police.Sanctioner
-    }
-
+    //agent valve
 }
