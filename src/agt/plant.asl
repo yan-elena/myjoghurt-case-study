@@ -3,6 +3,12 @@
 +!start : true
     <- .println("plant agent started") .
 
++order(L, N)
+    <- .println("received order: ", L, " quantity: ", N);
+       .send(unit, tell, order(L, N));
+       .println("send order to unit agent").
+
+
 +unfulfilled(O) <- .print("Unfulfilled ",O).
 
 +sanction(Ag,remove_from_systems)

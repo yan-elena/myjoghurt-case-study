@@ -7,9 +7,6 @@ mas sanction_demo {
     }
 
     agent plant
-    //{
-    //   ag-class: npl.NormativeAg("src/org/myjoghurt.npl")
-    //}
 
     //agent valve
 }
