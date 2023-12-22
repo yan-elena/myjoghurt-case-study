@@ -1,7 +1,7 @@
 scope unit_norms {
 
     norm n1: order(L, N) & .my_name(U)
-        -> obligation(U, n1, filling_process(L, N), `5 seconds`)
+        -> obligation(U, n1, filling_process(L, N), `2 minutes`)
         if unfulfilled: s0(U).
 
      sanction-rule s0(U)

@@ -12,7 +12,7 @@
     <- .println("filling process - liquid: ", L, " quantity: ",  N).
 
 
-+obligation(Ag,Norm,What,Deadline) : .my_name(Ag)
++active(obligation(Ag,Norm,What,Deadline)) : .my_name(Ag)
    <- .print(" ---> working to achieve ",What);
       !What;
       .print(" <--- done");
