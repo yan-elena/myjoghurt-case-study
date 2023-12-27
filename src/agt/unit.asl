@@ -1,16 +1,14 @@
++relation(unit, plant, valve).
+
 !start.
 
 +!start
     <- //debug(inspector_gui(on));
-        +relation(unit, plant, valve);
        .println("unit agent started") .
 
-+filling_process(L, N)
-    <- .println("filling process - liquid: ", L, " quantity: ",  N).
-
 +!filling_process(L, N)
-    <- .println("filling process - liquid: ", L, " quantity: ",  N).
-
+    <- .println("filling process - liquid: ", L, " quantity: ",  N);
+        +filling_process(L,N).
 
 +active(obligation(Ag,Norm,What,Deadline)) : .my_name(Ag)
    <- .print(" ---> working to achieve ",What);
