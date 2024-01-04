@@ -7,14 +7,17 @@
        .println("unit agent started") .
 
 +!filling_process(L, N)
-    <- .println("filling process - liquid: ", L, " quantity: ",  N);
-        +filling_process(L,N).
+    <- .println("start filling process - liquid: ", L, " quantity: ",  N);
+       //+filling_process(L,N);
+       //?relation(U, P, V);
+       .send(valve, tell, order(L, N)).
 
 +active(obligation(Ag,Norm,What,Deadline)) : .my_name(Ag)
-   <- .print(" ---> working to achieve ",What);
-      !What;
-      .print(" <--- done");
-      .
+   <- .print("obliged to ",What);
+      !What.
+      //+What.
+
++fulfilled(O) <- .print("Fulfilled ",O).
 
 +unfulfilled(O) <- .print("Unfulfilled ",O).
 

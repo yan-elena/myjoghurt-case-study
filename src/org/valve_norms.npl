@@ -1,0 +1,14 @@
+scope valve_norms {
+
+    norm n1: order(L, N1) & filled(L, N2) & N2 < N1 & .my_name(V)
+        -> obligation(V, n1, fill_bottle(L), `1 seconds`)
+            if fulfilled: s0
+            if unfulfilled: s0, s1.
+
+    sanction-rule s0: relation(U, P, V)
+        -> sanction(U, update_image(V)).
+
+    sanction-rule s1: relation(U, P, V)
+        -> sanction(U, cleaning(V)).
+
+}

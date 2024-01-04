@@ -1,13 +1,25 @@
++relation(unit, plant, valve).
+
 !start.
 
 +!start : true
     <- .println("valve agent started") .
 
-+!fill_bottle(L, N)
-    <-  -filled(L, N - 1);
-        +filled(L, N);
-        .println("fill bottle ...").
++order(L, N)
+    <- +filled(L, 0).
 
++!fill_bottle(L)
+    <-  ?filled(L, N2);
+        .println("fill bottle of ", L, " n.  ", N2 + 1);
+        -+filled(L, N2 + 1).
+//        +fill_bottle(L).
+
++active(obligation(Ag,Norm,What,Deadline)) : .my_name(Ag)
+   <- .print("obliged to ",What);
+      !What.
+      //+What.
+
++fulfilled(O) <- .print("Fulfilled ",O).
 
 +unfulfilled(O) <- .print("Unfulfilled ",O).
 

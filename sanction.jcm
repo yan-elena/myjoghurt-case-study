@@ -8,5 +8,7 @@ mas sanction_demo {
 
     agent plant
 
-    //agent valve
+    agent valve {
+        ag-class: npl.NormativeAg("src/org/valve_norms.npl")
+    }
 }
