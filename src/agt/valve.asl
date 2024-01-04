@@ -1,9 +1,14 @@
+
 +relation(unit, plant, valve).
 
 !start.
 
 +!start : true
-    <- .println("valve agent started") .
+    <-  .println("valve agent started") ;
+        +flow_rate(5).
+
+
+/*
 
 +order(L, N)
     <- +filled(L, 0).
@@ -28,3 +33,6 @@
 
 +sanction(Ag,Sanction)[norm(NormId,Event)]
    <- .print("Sanction ",Sanction," for ",Ag," created from norm ", NormId, " that is ",Event).
+
+
+*/

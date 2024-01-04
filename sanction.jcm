@@ -2,13 +2,15 @@ mas sanction_demo {
 
     agent bottle
 
+    agent plant
+
     agent unit {
         ag-class: npl.NormativeAg("src/org/unit_norms.npl")
     }
 
-    agent plant
-
     agent valve {
         ag-class: npl.NormativeAg("src/org/valve_norms.npl")
     }
+
+    agent container
 }

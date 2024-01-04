@@ -1,16 +1,21 @@
-+relation(unit, plant, valve).
-
 !start.
 
 +!start
-    <- //debug(inspector_gui(on));
-       .println("unit agent started") .
+    <-  //debug(inspector_gui(on));
+        +relation(unit, container, valve);
+        .println("unit agent started") .
 
 +!filling_process(L, N)
     <- .println("start filling process - liquid: ", L, " quantity: ",  N);
        //+filling_process(L,N);
-       //?relation(U, P, V);
-       .send(valve, tell, order(L, N)).
+
+       ?relation(U, C, V);
+
+       .send(V, askOne, flow_rate(X), R);
+       .println("asked for the estimated flow rate from valve: ", R);
+       .send(C, askOne, filling_status(L, N), S);
+       .println("asked for the filling status from the container: ", S)
+       .
 
 +active(obligation(Ag,Norm,What,Deadline)) : .my_name(Ag)
    <- .print("obliged to ",What);
