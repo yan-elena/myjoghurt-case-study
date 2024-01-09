@@ -5,7 +5,7 @@
 
 +order(L, N)
     <- .println("received order: ", L, " quantity: ", N);
-       .send(unit, tell, order(L, N));
+       .send(unit, tell, order(L, N));      //activate norm n1 to unit agent
        .println("send order to unit agent").
 
 

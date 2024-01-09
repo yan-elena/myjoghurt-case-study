@@ -13,24 +13,28 @@
         .send(C, askOne, filling_status(L, N), S);
         .println("asked for the filling status from the container: ", S);
 
-        +filled(L, 0);
+        +fill(L, 0);
         ?relation(U, C, V);
         !start_filling(V, L, N);
         .
 
-+!start_filling(V, L, N1) : filled(L, N2) & N2 < N1
++!start_filling(V, L, N1) : fill(L, N2) & N2 < N1
     <-  .send(V, tell, fill_bottle(L, N2 + 1));
         .println("send message to valve agent to fill the bottle ", N2 + 1);
-        -+filled(L, N2 + 1);
+        -+fill(L, N2 + 1);
         !start_filling(V, L, N1).
 
-+!start_filling(V, L, N1) : filled(L, N2) & N2 == N1
-    <-  .println("completing filling process").
+
++!start_filling(V, L, N) : fill(L, N)
+    <-  .println("start filling process").
+
++filled(L,N) : order(L, N)
+    <-  +filling_process(L, N);
+        .println("completing filling process").
 
 +active(obligation(Ag,Norm,What,Deadline)) : .my_name(Ag)
    <- .print("obliged to ",obligation(Ag,Norm,What,Deadline));
-      !What;
-      +What.
+      !What.
 
 +fulfilled(O) <- .print("Fulfilled ",O).
 

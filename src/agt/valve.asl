@@ -5,14 +5,16 @@
         +flow_rate(5).
 
 +!fill(L, N)
-    <-  .println("fill bottle of ", L).
+    <-  .println("fill bottle of ", L);
+        +fill(L, N).
 
 +active(obligation(Ag,Norm,What,Deadline)) : .my_name(Ag)
-   <- .print("obliged to ",obligation(Ag,Norm,What,Deadline));
-      !What;
-      +What.
+   <-   .print("obliged to ",obligation(Ag,Norm,What,Deadline));
+        !What.
 
-+fulfilled(O) <- .print("Fulfilled ",O).
++fulfilled(obligation(_,_,fill(L,N),_))
+   <-   .send(unit, signal, filled(L,N));
+        .print("Fulfilled obligation - bottle filled with liquid: ", L, " n: ", N).
 
 +unfulfilled(O) <- .print("Unfulfilled ",O).
 
