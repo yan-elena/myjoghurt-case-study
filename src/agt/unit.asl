@@ -13,9 +13,7 @@
         .send(C, askOne, filling_status(L, N), S);
         .println("asked for the filling status from the container: ", S);
 
-        +fill(L, 0);
-        ?relation(U, C, V);
-        !start_filling(V, L, N);
+        +filled(L, 0);
         .
 
 +!start_filling(V, L, N1) : fill(L, N2) & N2 < N1
@@ -27,6 +25,11 @@
 
 +!start_filling(V, L, N) : fill(L, N)
     <-  .println("start filling process").
+
++filled(L,N1) : order(L, N2) & N1 < N2
+    <-  ?relation(U, C, V);
+        .send(V, tell, fill_bottle(L, N1 + 1));
+        .println("send message to valve agent to fill the bottle ", N1 + 1).
 
 +filled(L,N) : order(L, N)
     <-  +filling_process(L, N);

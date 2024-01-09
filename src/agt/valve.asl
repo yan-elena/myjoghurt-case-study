@@ -1,11 +1,15 @@
 !start.
 
 +!start : true
-    <-  .println("valve agent started") ;
-        +flow_rate(5).
+    <-  .println("valve agent started");
+        +flow_rate(2000).
 
 +!fill(L, N)
-    <-  .println("fill bottle of ", L);
+    <-  .println("open valve");
+        .println("fill ", L, "...");
+        ?flow_rate(R);
+        .wait(R);
+        .println("close valve");
         +fill(L, N).
 
 +active(obligation(Ag,Norm,What,Deadline)) : .my_name(Ag)
@@ -13,10 +17,11 @@
         !What.
 
 +fulfilled(obligation(_,_,fill(L,N),_))
-   <-   .send(unit, signal, filled(L,N));
-        .print("Fulfilled obligation - bottle filled with liquid: ", L, " n: ", N).
+   <-   .print("fulfilled obligation - bottle n: ", N, " filled with ", L);
+        .send(unit, tell, filled(L,N)).
 
-+unfulfilled(O) <- .print("Unfulfilled ",O).
++unfulfilled(O)
+   <-   .print("Unfulfilled ",O).
 
 +sanction(Ag,update_image)
    <- .println("**** I am implementing the sanction for ",Ag," ****").
