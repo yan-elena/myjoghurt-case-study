@@ -6,7 +6,7 @@
 
 +!filling_process(L, N)
     <-  .println("start filling process - liquid: ", L, " quantity: ",  N);
-        -order(L, N); //remove the belief to avoid create more obligations
+        -order(L, N);       //remove the belief to avoid create more obligations
 
         ?relation(U, C, V);
         .send(V, askOne, flow_rate(X), R);
@@ -21,6 +21,7 @@
 
 +!start_filling(V, L, N1) : filled(L, N2) & N2 < N1
     <-  .send(V, tell, fill_bottle(L, N2 + 1));
+        .println("send message to valve agent to fill the bottle ", N2 + 1);
         -+filled(L, N2 + 1);
         !start_filling(V, L, N1).
 

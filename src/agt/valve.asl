@@ -16,7 +16,7 @@
 
 +unfulfilled(O) <- .print("Unfulfilled ",O).
 
-+sanction(Ag,remove_from_systems)
++sanction(Ag,update_image)
    <- .println("**** I am implementing the sanction for ",Ag," ****").
 
 +sanction(Ag,Sanction)[norm(NormId,Event)]
