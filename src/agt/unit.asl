@@ -6,7 +6,6 @@
 
 +!filling_process(L, N)
     <-  .println("start filling process - liquid: ", L, " quantity: ",  N);
-        -order(L, N);       //remove the belief to avoid create more obligations
 
         ?relation(U, C, V);
         .send(V, askOne, flow_rate(X), R);
