@@ -4,7 +4,7 @@ flow_rate(20).
 
 +!start : true
     <-  ?flow_rate(R);
-        +estimation(R*100);
+        +estimation(180);
         .println("valve agent started").
 
 +!fill(L, N)
@@ -13,23 +13,31 @@ flow_rate(20).
         ?estimation(E);
         .wait(E);
         .println("...close valve");
-        +fill(L, N).
+
+        .random(R);
+        A = E + (R * 20);    // measure the amount of liquid filled (simulated with a random number)
+        .send(unit, tell, filled(L, N, A))
+        .
 
 +active(obligation(Ag,Norm,What,Deadline)) : .my_name(Ag)
    <-   .print("obliged to ",obligation(Ag,Norm,What,Deadline));
         !What.
 
 +fulfilled(obligation(_,_,fill(L,N),_))
-   <-   .random(R);
-        A = 190 + (R * 100);    // measure the amount of liquid filled (simulated with a random number)
-        .print("fulfilled obligation - bottle n: ", N, " filled with ", L, " amount: ", A);
-        .send(unit, tell, filled(L, N, A)).
+   <-   .print("fulfilled obligation - bottle n: ", N, " filled with ", L).
 
 +unfulfilled(O)
    <-   .print("Unfulfilled ",O).
 
-+sanction(Ag,update_image)
-   <- .println("**** I am implementing the sanction for ",Ag," ****").
++sanction(Ag,adjust_flow_rate(A, L, N))
+   <-   .println("**** I am implementing the sanction adjust_flow_rate for ",Ag," ****");
+        ?estimation(E);
+        .random(R);
+        -+estimation(E + (R * 20));
+        ?estimation(E2);
+        .println("new estimation: ", E2);
+        -adjust;
+        .send(unit, signal, finished_adjust(L, N)).
 
 +sanction(Ag,Sanction)[norm(NormId,Event)]
-   <- .print("Sanction ",Sanction," for ",Ag," created from norm ", NormId, " that is ",Event).
+   <- .print("**** I am implementing the sanction ",Sanction," for ",Ag).

@@ -1,5 +1,6 @@
 relation(unit, container, valve).
-tolerance_range(20, 22).
+tolerance_range(200, 210).
+unful_count(0).
 
 !start.
 
@@ -15,7 +16,7 @@ tolerance_range(20, 22).
         .send(C, askOne, filling_status(L, A), S);
         .println("asked for the filling status from the container: ", S);
 
-        +filled(L, 0, 0);
+        !next_bottle(L, 0);
 
         .
 
@@ -30,19 +31,50 @@ tolerance_range(20, 22).
     <-  .println("start filling process").
 
 // notification of filled bottle
-+filled(L,N1,Q) : order(L, N2) & N1 < N2
++filled(L,N1,A) : order(L, N2) & N1 < N2
     <-  ?relation(U, C, V);
 
         //notify to container agent
-        .send(C, tell, filled(Q));
+        .send(C, tell, filled(A));
 
-        //fill next bottle
-        .send(V, tell, fill_bottle(L, N1 + 1));
-        .println("send message to valve agent to fill the bottle ", N1 + 1).
+        //check the amount
+        .println("check the amount of the liquid: ", A);
+        !check_amount(L, N1, A).
 
-+filled(L,N,Q) : order(L, N)
++filled(L,N,A) : order(L, N)
     <-  +filling_process(L, N);
-        .println("completing filling process").
+        .println("completing filling process");
+        ?relation(U, C, V);
+        .send(V, tell, fill(L,N)).
+
++!check_amount(L,N,A) : tolerance_range(MIN, MAX) & A>MIN & A<MAX
+    <-  ?relation(U, C, V);
+        .println("amount ok");
+        .send(V, tell, fill(L,N));
+        -+unful_count(0);
+        !next_bottle(L, N).
+
++!check_amount(L,N,A)
+    <-  ?unful_count(C);
+        -+unful_count(C+1);
+        .println("amount ", A, " not good, count: ", C+1);
+        !check_sanctions(C+1).
+
++!check_sanctions(F) : F < 2
+    <-  ?relation(U, C, V);
+        .send(V, tell, adjust).
+
++!check_sanctions(F)
+    <-  ?relation(U, C, V);
+        .send(V, tell, self_cleaning).
+
++!next_bottle(L, N)
+    <-  ?relation(U, C, V);
+        .println("send message to valve agent to fill the bottle ", N + 1);
+        .send(V, tell, fill_bottle(L, N+1)).
+
++finished_adjust(L, N)
+    <- !next_bottle(L, N).
 
 +active(obligation(Ag,Norm,What,Deadline)) : .my_name(Ag)
    <- .print("obliged to ",obligation(Ag,Norm,What,Deadline));
