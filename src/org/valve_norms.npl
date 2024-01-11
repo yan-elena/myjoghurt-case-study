@@ -1,5 +1,14 @@
 scope valve_norms {
 
     norm n1: fill_bottle(L, N) & .my_name(V)
-        -> obligation(V, n1, fill(L, N), `30 seconds`).
+        -> obligation(V, n1, fill(L, N), `30 seconds`)
+        if unfulfilled: s1, s2.
+
+    // adjust its flow rate estimation -> directed sanction
+    sanction-rule s1 : frequency(A, F) & F < N & .my_name(V)
+        ->  sanction(V, adjust_flow_rate(A)) .
+
+    // activate the valve's self cleaning routine -> directed sanction
+    sanction-rule s2: frequency(A, F) & F > N & .my_name(V)
+        -> sanction(V, self_cleaning(A)) .
 }

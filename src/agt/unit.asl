@@ -1,8 +1,10 @@
+relation(unit, container, valve).
+tolerance_range(20, 22).
+
 !start.
 
 +!start
-    <-  +relation(unit, container, valve);
-        .println("unit agent started") .
+    <-  .println("unit agent started") .
 
 +!filling_process(L, N)
     <-  .println("start filling process - liquid: ", L, " quantity: ",  N);
@@ -10,10 +12,11 @@
         ?relation(U, C, V);
         .send(V, askOne, flow_rate(X), R);
         .println("asked for the estimated flow rate from valve: ", R);
-        .send(C, askOne, filling_status(L, N), S);
+        .send(C, askOne, filling_status(L, A), S);
         .println("asked for the filling status from the container: ", S);
 
-        +filled(L, 0);
+        +filled(L, 0, 0);
+
         .
 
 +!start_filling(V, L, N1) : fill(L, N2) & N2 < N1
@@ -26,12 +29,18 @@
 +!start_filling(V, L, N) : fill(L, N)
     <-  .println("start filling process").
 
-+filled(L,N1) : order(L, N2) & N1 < N2
+// notification of filled bottle
++filled(L,N1,Q) : order(L, N2) & N1 < N2
     <-  ?relation(U, C, V);
+
+        //notify to container agent
+        .send(C, tell, filled(Q));
+
+        //fill next bottle
         .send(V, tell, fill_bottle(L, N1 + 1));
         .println("send message to valve agent to fill the bottle ", N1 + 1).
 
-+filled(L,N) : order(L, N)
++filled(L,N,Q) : order(L, N)
     <-  +filling_process(L, N);
         .println("completing filling process").
 

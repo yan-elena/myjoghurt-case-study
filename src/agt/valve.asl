@@ -1,15 +1,18 @@
+flow_rate(20).
+
 !start.
 
 +!start : true
-    <-  .println("valve agent started");
-        +flow_rate(2000).
+    <-  ?flow_rate(R);
+        +estimation(R*100);
+        .println("valve agent started").
 
 +!fill(L, N)
-    <-  .println("open valve");
-        .println("fill ", L, "...");
-        ?flow_rate(R);
-        .wait(R);
-        .println("close valve");
+    <-  .println("...open valve");
+        .println("...fill ", L);
+        ?estimation(E);
+        .wait(E);
+        .println("...close valve");
         +fill(L, N).
 
 +active(obligation(Ag,Norm,What,Deadline)) : .my_name(Ag)
@@ -17,8 +20,10 @@
         !What.
 
 +fulfilled(obligation(_,_,fill(L,N),_))
-   <-   .print("fulfilled obligation - bottle n: ", N, " filled with ", L);
-        .send(unit, tell, filled(L,N)).
+   <-   .random(R);
+        A = 190 + (R * 100);    // measure the amount of liquid filled (simulated with a random number)
+        .print("fulfilled obligation - bottle n: ", N, " filled with ", L, " amount: ", A);
+        .send(unit, tell, filled(L, N, A)).
 
 +unfulfilled(O)
    <-   .print("Unfulfilled ",O).
