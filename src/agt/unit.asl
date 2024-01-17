@@ -1,5 +1,4 @@
 relation(unit, container, valve).
-tolerance_range(200, 210).
 unful_count(0).
 
 !start.
