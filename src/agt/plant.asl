@@ -10,7 +10,7 @@
 
 +tolerance_range(MN, MX)
     <-  .println("received tolerance range: min  ", MN, " max: ", MX);
-        .send(unit, tell, tolerance_range(MN, MX));      //activate norm n1 to unit agent
+        .send(unit, tell, tolerance_range(MN, MX));
         .
 
 +unfulfilled(O)

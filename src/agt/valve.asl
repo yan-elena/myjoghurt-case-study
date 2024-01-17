@@ -29,15 +29,12 @@ flow_rate(20).
 +unfulfilled(O)
    <-   .print("Unfulfilled ",O).
 
-+sanction(Ag,adjust_flow_rate(A, L, N))
++sanction(Ag,adjust_flow_rate(L, N, M))
    <-   .println("**** I am implementing the sanction adjust_flow_rate for ",Ag," ****");
         ?estimation(E);
-        .random(R);
-        -+estimation(E + (R * 20));
-        ?estimation(E2);
-        .println("new estimation: ", E2);
-        -adjust;
-        .send(unit, signal, finished_adjust(L, N)).
+        -+estimation(E + M);
+        .println("new estimation: ", E + M);
+        .send(unit, signal, finished_adjust(L, N, M)).
 
 +sanction(Ag,Sanction)[norm(NormId,Event)]
    <- .print("**** I am implementing the sanction ",Sanction," for ",Ag).

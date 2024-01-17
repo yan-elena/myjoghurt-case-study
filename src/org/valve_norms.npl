@@ -5,8 +5,8 @@ scope valve_norms {
         if unfulfilled: s1(L, N), s2.
 
     // adjust its flow rate estimation -> directed sanction
-    sanction-rule s1(L, N) : adjust & .my_name(V)
-        ->  sanction(V, adjust_flow_rate(A, L, N)) .
+    sanction-rule s1(L, N) : adjust(M) & .my_name(V)
+        ->  sanction(V, adjust_flow_rate(L, N, M)) .
 
     // activate the valve's self cleaning routine -> directed sanction
     sanction-rule s2: self_cleaning & .my_name(V)
