@@ -68,38 +68,30 @@ adjust_times(0).
 
 // outside the range
 +!check_amount(L,N,A) : tolerance_range(MIN, MAX) & A<MIN
-    <-  ?unful_count(C);
-        -+unful_count(C+1);
-
-        ?adjust_times(T);
-        -+adjust_times(T+1);
-
-        ?deviation_factor(P, M);
-        -+deviation_factor("negative", A-MIN);
-        ?learning_factor(I, _, E);
-        -+learning_factor(I-0.2, (C+1)/N, E);
-
-        .println("update deviation factor: negative, ", A - MIN);
-        .println("update learning factor, image: ", I-0.2, ", frequency: ", (C+1)/N, " efficacy: ", E);
-
+    <-  !update_factors(N, A, A-MIN);
         !check_sanctions(L, N).
 
-// outside the range todo
+// outside the range
 +!check_amount(L,N,A) : tolerance_range(MIN, MAX) & A>MAX
+    <-  !update_factors(N, A, A-MAX);
+        !check_sanctions(L, N).
+
+
++!update_factors(N, A, M)       // number, amount, magnitude
     <-  ?unful_count(C);
         -+unful_count(C+1);
 
         ?adjust_times(T);
         -+adjust_times(T+1);
 
-        ?deviation_factor(P, M);
-        -+deviation_factor("negative", A-MAX);
+        ?deviation_factor(P, _);
+        -+deviation_factor("negative", M);
         ?learning_factor(I, _, E);
         -+learning_factor(I-0.2, (C+1)/N, E);
 
-        .println("update deviation factor: negative, ", A-MAX);
-        .println("update learning factor, image: ", I-0.2, ", frequency: ", (C+1)/N, " efficacy: ", E);
-        !check_sanctions(L, N).
+        .println("update deviation factor: negative, ", M);
+        .println("update learning factor, image: ", I-0.2, ", frequency: ", (C+1)/N, " efficacy: ", E).
+
 
 
 // Executor capability
