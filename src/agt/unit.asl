@@ -68,12 +68,12 @@ adjust_times(0).
 
 // outside the range
 +!check_amount(L,N,A) : tolerance_range(MIN, MAX) & A<MIN
-    <-  !update_factors(N, A, A-MIN);
+    <-  !update_factors(N, A, MIN - A);
         !check_sanctions(L, N).
 
 // outside the range
 +!check_amount(L,N,A) : tolerance_range(MIN, MAX) & A>MAX
-    <-  !update_factors(N, A, A-MAX);
+    <-  !update_factors(N, A, MAX - A);
         !check_sanctions(L, N).
 
 
@@ -98,22 +98,21 @@ adjust_times(0).
 
 // activates the valve’s self cleaning routing, if the problem persists for two consecutive times
 +!check_sanctions(_, _) : adjust_times(T) & T > 3
-    <-  .println("activate sanction self_cleaning: ", T);
+    <-  .println("activate sanction self_cleaning: ");
         ?relation(_, _, V);
         .send(V, tell, self_cleaning).
 
 // adjusts the estimated flow rate, if the image is below a threshold
 +!check_sanctions(_, _) : learning_factor(I, _, _) & threshold(T) & I < T
                          & adjust_times(T2) & T2 < 3
-    <-  .println("activate sanction adjust: ", T);
+    <-  .println("activate sanction adjust: ");
         ?relation(U, C, V);
 
         ?deviation_factor(P, M);
         .send(V, tell, adjust(M)).
 
 +!check_sanctions(L, N)
-    <-  ?adjust_times(T);
-        .println("no sanctions adj: ", T);
+    <-  .println("no sanctions");
         ?relation(_, _, V);
         .send(V, tell, fill(L,N));
         !next_bottle(L, N).
