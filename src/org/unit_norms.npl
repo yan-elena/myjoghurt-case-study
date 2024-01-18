@@ -1,14 +1,14 @@
-scope unit_norms {
+scope valve_norms {
 
-    norm n1: order(L, N) & .my_name(U)
-        -> obligation(U, n1, filling_process(L, N), `2 minutes`).
-        //if unfulfilled: s3, s4. //todo
+    norm n1: fill_bottle(L, N) & .my_name(V)
+        -> obligation(V, n1, fill(L, N), `5 seconds`)
+        if unfulfilled: s1(L, N), s2.
 
-     // reduces its likelihood
-     sanction-rule s3 : .my_name(U)
-            -> sanction(U, update_image).
+    // adjust its flow rate estimation -> directed sanction
+    sanction-rule s1(L, N) : adjust(M) & .my_name(V)
+        ->  sanction(V, adjust_flow_rate(L, N, M)) .
 
-    // removes unit agent completely as an option
-     sanction-rule s4 : .my_name(U)
-            -> sanction(U, remove_unit).
+    // activate the valve's self cleaning routine -> directed sanction
+    sanction-rule s2: self_cleaning & .my_name(V)
+        -> sanction(V, self_cleaning) .
 }

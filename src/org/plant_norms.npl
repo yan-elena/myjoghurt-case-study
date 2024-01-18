@@ -1,0 +1,14 @@
+scope plant_norms {
+
+    norm n1: order(L, N) & .my_name(U)
+        -> obligation(U, n1, filling_process(L, N), `2 minutes`).
+        //if unfulfilled: s3, s4. //todo
+
+     // reduces its likelihood
+     sanction-rule s3 : .my_name(U)
+            -> sanction(U, update_image).
+
+    // removes unit agent completely as an option
+     sanction-rule s4 : .my_name(U)
+            -> sanction(U, remove_unit).
+}
