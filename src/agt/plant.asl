@@ -8,9 +8,9 @@
         .send(unit, tell, order(L, N));      //activate norm n1 to unit agent
         .println("send order to unit agent").
 
-+tolerance_range(MN, MX)
++filling_range(MN, MX)
     <-  .println("received tolerance range: min  ", MN, " max: ", MX);
-        .send(unit, tell, tolerance_range(MN, MX));
+        .send(unit, tell, filling_range(MN, MX));
         .
 
 +unfulfilled(O)

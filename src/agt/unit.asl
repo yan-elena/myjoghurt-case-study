@@ -53,7 +53,7 @@ adjust_times(0).
 // Evaluator capability
 
 // within the range
-+!check_amount(L,N,A) : tolerance_range(MIN, MAX) & A>MIN & A<MAX
++!check_amount(L,N,A) : filling_range(MIN, MAX) & A>MIN & A<MAX
     <-  ?relation(_, _, V);
         .println("amount ok");
         .send(V, tell, fill(L,N));
@@ -67,12 +67,12 @@ adjust_times(0).
         !next_bottle(L, N).
 
 // outside the range
-+!check_amount(L,N,A) : tolerance_range(MIN, MAX) & A<MIN
++!check_amount(L,N,A) : filling_range(MIN, MAX) & A<MIN
     <-  !update_factors(N, A, MIN - A);
         !check_sanctions(L, N).
 
 // outside the range
-+!check_amount(L,N,A) : tolerance_range(MIN, MAX) & A>MAX
++!check_amount(L,N,A) : filling_range(MIN, MAX) & A>MAX
     <-  !update_factors(N, A, MAX - A);
         !check_sanctions(L, N).
 
