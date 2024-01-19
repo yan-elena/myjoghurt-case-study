@@ -28,12 +28,24 @@ public class ValveArtifact extends Artifact {
         log("...close valve");
 
         int level = random.nextInt(estimation - 10, estimation + 10);
-        log("level: " + level);
+        log("filled, measuring level: " + level);
         getObsProperty("level").updateValue(level);
     }
 
     @OPERATION
+    void selfCleaning() {
+        log("...start self cleaning routine");
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        log("...finish self cleaning routine");
+    }
+
+    @OPERATION
     void updateEstimation(int estimation) {
+        log("update estimation: " + estimation);
         this.estimation = estimation;
     }
 
