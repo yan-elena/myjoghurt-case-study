@@ -1,14 +1,19 @@
-scope valve_norms {
+scope unit_norms {
 
-    norm n1: fill_bottle(L, N) & .my_name(V)
-        -> obligation(V, n1, fill(L, N), `5 seconds`)
-        if unfulfilled: s1(L, N), s2.
+    norm n1: order(L, N1) & completed(L, N2) & N2 < N1 & .my_name(U)
+        -> obligation(U, n1, fill_bottle(L, N2 + 1), `5 seconds`)
+        if fulfilled: s0
+        if unfulfilled: s0, s1(L, N), s2.
+
+    // update the factors
+    sanction-rule s0 : .my_name(U)
+        ->  sanction(U, update_factors) .
 
     // adjust its flow rate estimation -> directed sanction
-    sanction-rule s1(L, N) : adjust(M) & .my_name(V)
-        ->  sanction(V, adjust_flow_rate(L, N, M)) .
+    sanction-rule s1(L, N) : adjust(M) & .my_name(U)
+        ->  sanction(U, adjust_flow_rate(L, N, M)) .
 
     // activate the valve's self cleaning routine -> directed sanction
-    sanction-rule s2: self_cleaning & .my_name(V)
-        -> sanction(V, self_cleaning) .
+    sanction-rule s2: self_cleaning & .my_name(U)
+        -> sanction(U, self_cleaning) .
 }
