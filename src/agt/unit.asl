@@ -1,4 +1,4 @@
-unful_count(0).
+unfulfilled_count(0).
 deviation_factor(positive, 0). // deviation factor with polarity and magnitude
 learning_factor(1, 0, 1). // learning factor with the image, frequency and efficacy
 threshold(0.7).
@@ -33,7 +33,7 @@ adjust_times(0).
         -+adjust_times(0);                      //reset the count
 
         ?learning_factor(I, _, E);
-        ?unful_count(C);
+        ?unfulfilled_count(C);
         -+learning_factor(I+0.2, C/D, E);       //update the learning factor
         -+deviation_factor("positive", 0);      //update the deviation factor
         .println("update deviation factor: positive, 0");
@@ -43,14 +43,14 @@ adjust_times(0).
 
 
 // negative sanction, less than the range
-+sanction(Ag,update_factors) : unfulfilled(O) & level(L) & filling_range(MIN, MAX) & L<MIN & .my_name(Ag)
++sanction(Ag,update_factors) : unfulfilled_count(O) & level(L) & filling_range(MIN, MAX) & L<MIN & .my_name(Ag)
     <-  .println("**** negative sanction update_factors for ",Ag,", filled level less than the range ****");
         !update_negative_factors(MIN - L);
 
         !completed_bottle.
 
 // negative sanction, more than the range
-+sanction(Ag,update_factors) : unfulfilled(O) & level(L) & filling_range(MIN, MAX) & L>MAX & .my_name(Ag)
++sanction(Ag,update_factors) : unfulfilled_count(O) & level(L) & filling_range(MIN, MAX) & L>MAX & .my_name(Ag)
     <-  .println("**** negative sanction update_factors for ",Ag,", filled level more than the range ****");
         !update_negative_factors(MAX - L);
 
@@ -75,8 +75,8 @@ adjust_times(0).
         !completed_bottle.
 
 +!update_negative_factors(M)       // magnitude
-    <-  ?unful_count(C);
-        -+unful_count(C+1);
+    <-  ?unfulfilled_count(C);
+        -+unfulfilled_count(C+1);
 
         ?adjust_times(T);
         -+adjust_times(T+1);
@@ -98,7 +98,7 @@ adjust_times(0).
 
 +fulfilled(O) <- .print("Fulfilled ",O).
 
-+unfulfilled(O) <- .print("Unfulfilled ",O).
++unfulfilled_count(O) <- .print("unfulfilled_count ",O).
 
 +sanction(Ag,Sanction)[norm(NormId,Event)]
    <- .print("Sanction ",Sanction," for ",Ag," created from norm ", NormId, " that is ",Event).
