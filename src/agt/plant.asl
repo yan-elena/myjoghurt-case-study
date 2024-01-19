@@ -8,6 +8,11 @@
         .send(unit, tell, order(L, N));      //activate norm n1 to unit agent
         .println("send order to unit agent").
 
++level(L)
+    <- .println("observed level: ", L).
+
+
+
 +filling_range(MN, MX)
     <-  .println("received tolerance range: min  ", MN, " max: ", MX);
         .send(unit, tell, filling_range(MN, MX));
@@ -21,3 +26,6 @@
 
 +sanction(Ag,Sanction)[norm(NormId,Event)]
    <-   .print("Sanction ",Sanction," for ",Ag," created from norm ", NormId, " that is ",Event).
+
+
+{ include("$jacamoJar/templates/common-cartago.asl") }
