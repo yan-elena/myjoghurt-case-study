@@ -14,7 +14,7 @@
 
 
 +filling_range(MN, MX)
-    <-  .println("received tolerance range: min  ", MN, " max: ", MX);
+    <-  .println("received filling range: min  ", MN, " max: ", MX);
         .send(unit, tell, filling_range(MN, MX));
         .
 

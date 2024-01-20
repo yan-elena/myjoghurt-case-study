@@ -13,21 +13,25 @@ adjust_times(0).
     <-  +completed(L, 0).
 
 +!fill_bottle(L, N)
-    <-  .println("call valve operation to fill the bottle ", N);
+    <-  .println("---------------------------------");
+        .println("call valve operation to fill the bottle ", N);
         openValveAndFill.
 
 +level(L) : filling_range(MIN, MAX) & L>=MIN & L<=MAX
-    <- .println("observed level: ", L, " -> in the range");
+    <- .println("observed level: ", L, " -> in the range, obligation fulfilled");
+        ?completed(LQ, D);
+        +fill_bottle(LQ, D + 1);
         !completed_bottle.
 
 +!completed_bottle
     <-  ?completed(L, D);
+        .println("bottle ", D+1, " completed");
         -+completed(L, D + 1).
 
 // update factors sanction
 
 // positive sanction, within the range
-+sanction(Ag,update_factors) : fulfilled(O)
++sanction(Ag,update_factors) : fulfilled(O) & .my_name(Ag)
     <-  .println("**** positive sanction update_factors for ",Ag," ****");
         ?completed(L, D);
         -+adjust_times(0);                      //reset the count
@@ -37,24 +41,38 @@ adjust_times(0).
         -+learning_factor(I+0.2, C/D, E);       //update the learning factor
         -+deviation_factor("positive", 0);      //update the deviation factor
         .println("update deviation factor: positive, 0");
-        .println("update learning factor, image: ", I+0.2, ", frequency: ", C/N, " efficacy: ", E);
+        .println("update learning factor, image: ", I+0.2, ", frequency: ", C/D, " efficacy: ", E);
 
         !completed_bottle.
 
 
 // negative sanction, less than the range
-+sanction(Ag,update_factors) : unfulfilled_count(O) & level(L) & filling_range(MIN, MAX) & L<MIN & .my_name(Ag)
++sanction(Ag,update_factors) : unfulfilled(O) & level(L) & filling_range(MIN, MAX) & L<MIN & .my_name(Ag)
     <-  .println("**** negative sanction update_factors for ",Ag,", filled level less than the range ****");
         !update_negative_factors(MIN - L);
 
-        !completed_bottle.
+        ?learning_factor(I, _, _);
+        ?threshold(T);
+        .println("I: ", I, " T: ", T);
+        if (I >= T) {
+            !completed_bottle;
+            .println("no other sanctions, completed bottle");
+        }.
 
 // negative sanction, more than the range
-+sanction(Ag,update_factors) : unfulfilled_count(O) & level(L) & filling_range(MIN, MAX) & L>MAX & .my_name(Ag)
++sanction(Ag,update_factors) : unfulfilled(O) & level(L) & filling_range(MIN, MAX) & L>MAX & .my_name(Ag)
     <-  .println("**** negative sanction update_factors for ",Ag,", filled level more than the range ****");
         !update_negative_factors(MAX - L);
 
-        !completed_bottle.
+        ?learning_factor(I, _, _);
+        ?threshold(T);
+        .println("I: ", I, " T: ", T);
+        if (I >= T) {
+            !completed_bottle;
+            .println("no other sanctions, completed bottle");
+        }.
+
+
 
 // self cleaning sanction
 
@@ -70,16 +88,17 @@ adjust_times(0).
 +sanction(Ag, adjust_flow_rate) : .my_name(Ag)
     <-  .println("**** sanction: adjust valve's flow rate estimation");
         ?deviation_factor(P, M);
-        ?getFlowRateEstimation(E);
+        getFlowRateEstimation(E);
         updateEstimation(E + M);
+
+        ?adjust_times(T);
+        -+adjust_times(T+1);
+        .println("number of consecutive adjustments executed: ", T+1);
         !completed_bottle.
 
 +!update_negative_factors(M)       // magnitude
     <-  ?unfulfilled_count(C);
         -+unfulfilled_count(C+1);
-
-        ?adjust_times(T);
-        -+adjust_times(T+1);
 
         ?completed(_, D);
         ?deviation_factor(P, _);
@@ -87,7 +106,6 @@ adjust_times(0).
         ?learning_factor(I, _, E);
         -+learning_factor(I-0.2, (C+1)/(D+1), E);
 
-        .println("M: ", C, " D: ", D);
         .println("update deviation factor: negative, ", M);
         .println("update learning factor, image: ", I-0.2, ", frequency: ", (C+1)/(D+1), " efficacy: ", E).
 
@@ -98,7 +116,7 @@ adjust_times(0).
 
 +fulfilled(O) <- .print("Fulfilled ",O).
 
-+unfulfilled_count(O) <- .print("unfulfilled_count ",O).
++unfulfilled(O) <- .print("Unfulfilled ",O).
 
 +sanction(Ag,Sanction)[norm(NormId,Event)]
    <- .print("Sanction ",Sanction," for ",Ag," created from norm ", NormId, " that is ",Event).

@@ -11,7 +11,7 @@ scope unit_norms {
 
     // adjust its flow rate estimation, if the image is below a threshold -> directed sanction
     sanction-rule s1(L, N) : learning_factor(I, _, _) & threshold(T) & I < T
-                           & adjust_times(T2) & T2 < 3 & .my_name(U)
+                           & adjust_times(T2) & T2 <= 3 & .my_name(U)
         ->  sanction(U, adjust_flow_rate) .
 
     // signal to activate the valve's self cleaning routine -> directed sanction
