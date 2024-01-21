@@ -3,7 +3,7 @@ scope plant_norms {
     norm n2: order_status(U, L, N, C) & C < N & .my_name(P)
         -> obligation(P, n2, fill_bottle(U, L, N, C + 1), `7 seconds`)
        if fulfilled: s0(U, "positive")
-       if unfulfilled: s0(U, "negative"), s1(U, L, N), s2(U).
+       if unfulfilled: s0(U, "negative"), s3(U, L, N), s4(U).
 
     // update the factors
     sanction-rule s0(U, S) : .my_name(P)
@@ -11,12 +11,12 @@ scope plant_norms {
 
     // if the image is below a threshold, reduce the unit agent’s likelihood of being
     // selected for subsequent filling orders
-    sanction-rule s1(U, L, N) : factors(U, _, I, _) & image_threshold(T) & I < T
+    sanction-rule s3(U, L, N) : factors(U, _, I, _) & image_threshold(T) & I < T
                            & reduce_times(T2) & T2 < 5 & .my_name(P)
         ->  sanction(P, reduce_likelihood(U)) .
 
     // if the problem persists for five consecutive times, remove the unit agent
     // completely as an option for subsequent filling orders
-    sanction-rule s2(U): reduce_times(T) & T >= 5 & .my_name(P)
+    sanction-rule s4(U): reduce_times(T) & T >= 5 & .my_name(P)
         -> sanction(P, remove_unit(U)) .
 }
