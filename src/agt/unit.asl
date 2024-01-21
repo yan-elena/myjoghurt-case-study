@@ -9,42 +9,31 @@ adjust_times(0).
 +!start
     <-  .println("unit agent started") .
 
-+order(L, N)
-    <-  +completed(L, 0).
-
-+!fill_bottle(L, N)
++fill(L, N)
     <-  .println("---------------------------------");
         .println("call valve operation to fill the bottle ", N);
         openValveAndFill.
 
-+level(L) : filling_range(MIN, MAX) & L>=MIN & L<=MAX
-    <- .println("observed level: ", L, " -> in the range, obligation fulfilled");
-        ?completed(LQ, D);
-        +fill_bottle(LQ, D + 1);
-        !completed_bottle.
-
-+!completed_bottle
-    <-  ?completed(L, D);
-        .println("bottle ", D+1, " completed");
-        -+completed(L, D + 1).
 
 // update factors sanction
 
 // positive sanction, within the range
 +sanction(Ag,update_factors) : fulfilled(O) & .my_name(Ag)
     <-  .println("**** positive sanction update_factors for ",Ag," ****");
-        ?completed(L, D);
+        ?fill_bottle(L, N);
         -+adjust_times(0);                      //reset the count
 
         ?learning_factor(I, _, E);
         ?unfulfilled_count(C);
-        -+learning_factor(I+0.2, C/D, E);       //update the learning factor
+        -+learning_factor(I+0.2, C/N, E);       //update the learning factor
         -+deviation_factor("positive", 0);      //update the deviation factor
         .println("update deviation factor: positive, 0");
-        .println("update learning factor, image: ", I+0.2, ", frequency: ", C/D, " efficacy: ", E);
+        .println("update learning factor, image: ", I+0.2, ", frequency: ", C/N, " efficacy: ", E);
+        .
 
-        !completed_bottle.
-
++level(L) : filling_range(MIN, MAX) & L>=MIN & L<=MAX
+    <-  ?fill_bottle(L, N);
+        +fill(L, N).
 
 // negative sanction, less than the range
 +sanction(Ag,update_factors) : unfulfilled(O) & level(L) & filling_range(MIN, MAX) & L<MIN & .my_name(Ag)
@@ -53,11 +42,8 @@ adjust_times(0).
 
         ?learning_factor(I, _, _);
         ?threshold(T);
-        .println("I: ", I, " T: ", T);
-        if (I >= T) {
-            !completed_bottle;
-            .println("no other sanctions, completed bottle");
-        }.
+        .println("I: ", I, " T: ", T); //todo: not triggers s1
+        .
 
 // negative sanction, more than the range
 +sanction(Ag,update_factors) : unfulfilled(O) & level(L) & filling_range(MIN, MAX) & L>MAX & .my_name(Ag)
@@ -66,11 +52,7 @@ adjust_times(0).
 
         ?learning_factor(I, _, _);
         ?threshold(T);
-        .println("I: ", I, " T: ", T);
-        if (I >= T) {
-            !completed_bottle;
-            .println("no other sanctions, completed bottle");
-        }.
+        .
 
 
 
@@ -80,8 +62,7 @@ adjust_times(0).
     <-  .println("**** sanction: activate valve's self cleaning routing");
         selfCleaning;
         .println("finish cleaning");
-
-        !completed_bottle.
+        .
 
 // adjust flow rate sanction
 
@@ -94,13 +75,12 @@ adjust_times(0).
         ?adjust_times(T);
         -+adjust_times(T+1);
         .println("number of consecutive adjustments executed: ", T+1);
-        !completed_bottle.
+        .
 
 +!update_negative_factors(M)       // magnitude
     <-  ?unfulfilled_count(C);
         -+unfulfilled_count(C+1);
 
-        ?completed(_, D);
         ?deviation_factor(P, _);
         -+deviation_factor("negative", M);
         ?learning_factor(I, _, E);

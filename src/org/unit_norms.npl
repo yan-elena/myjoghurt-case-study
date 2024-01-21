@@ -1,7 +1,7 @@
 scope unit_norms {
 
-    norm n1: order(L, N1) & completed(L, N2) & N2 < N1 & .my_name(U)
-        -> obligation(U, n1, fill_bottle(L, N2 + 1), `5 seconds`)
+    norm n1: fill_bottle(L, N) & .my_name(U)
+        -> obligation(U, n1, fill(L, N), `5 seconds`)
         if fulfilled: s0
         if unfulfilled: s0, s1(L, N), s2.
 

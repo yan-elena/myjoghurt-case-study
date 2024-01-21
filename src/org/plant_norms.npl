@@ -1,14 +1,21 @@
-scope plant_norms {
+scope unit_norms {
 
-    norm n1: order(L, N) & .my_name(U)
-        -> obligation(U, n1, filling_process(L, N), `2 minutes`).
-        //if unfulfilled: s3, s4. //todo
+    norm n1: order(L, N1) & completed(L, N2) & N2 < N1 & .my_name(U)
+        -> obligation(U, n1, fill_bottle(L, N2 + 1), `5 seconds`)
+        if fulfilled: s0
+        if unfulfilled: s0, s1(L, N), s2.
 
-     // reduces its likelihood
-     sanction-rule s3 : .my_name(U)
-            -> sanction(U, update_image).
+    // update the factors
+    sanction-rule s0 : .my_name(U)
+        ->  sanction(U, update_factors) .
 
-    // removes unit agent completely as an option
-     sanction-rule s4 : .my_name(U)
-            -> sanction(U, remove_unit).
+    // adjust its flow rate estimation, if the image is below a threshold -> directed sanction
+    sanction-rule s1(L, N) : learning_factor(I, _, _) & threshold(T) & I < T
+                           & adjust_times(T2) & T2 <= 3 & .my_name(U)
+        ->  sanction(U, adjust_flow_rate) .
+
+    // signal to activate the valve's self cleaning routine -> directed sanction
+    // if the problem persists for two consecutive times
+    sanction-rule s2: adjust_times(T) & T > 3 & .my_name(U)
+        -> sanction(U, self_cleaning) .
 }
