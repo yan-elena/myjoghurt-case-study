@@ -1,21 +1,22 @@
-scope unit_norms {
+scope plant_norms {
 
-    norm n1: order(L, N1) & completed(L, N2) & N2 < N1 & .my_name(U)
-        -> obligation(U, n1, fill_bottle(L, N2 + 1), `5 seconds`)
-        if fulfilled: s0
-        if unfulfilled: s0, s1(L, N), s2.
+    norm n2: order_status(U, L, N, C) & C < N & .my_name(P)
+        -> obligation(P, n2, fill_bottle(U, L, N, C + 1), `7 seconds`)
+       if fulfilled: s0(U, "positive")
+       if unfulfilled: s0(U, "negative"), s1(U, L, N), s2(U).
 
     // update the factors
-    sanction-rule s0 : .my_name(U)
-        ->  sanction(U, update_factors) .
+    sanction-rule s0(U, S) : .my_name(P)
+        ->  sanction(P, update_factors(U, S)) .
 
-    // adjust its flow rate estimation, if the image is below a threshold -> directed sanction
-    sanction-rule s1(L, N) : learning_factor(I, _, _) & threshold(T) & I < T
-                           & adjust_times(T2) & T2 <= 3 & .my_name(U)
-        ->  sanction(U, adjust_flow_rate) .
+    // if the image is below a threshold, reduce the unit agent’s likelihood of being
+    // selected for subsequent filling orders
+    sanction-rule s1(U, L, N) : factors(U, _, I, _) & image_threshold(T) & I < T
+                           & reduce_times(T2) & T2 < 5 & .my_name(P)
+        ->  sanction(P, reduce_likelihood(U)) .
 
-    // signal to activate the valve's self cleaning routine -> directed sanction
-    // if the problem persists for two consecutive times
-    sanction-rule s2: adjust_times(T) & T > 3 & .my_name(U)
-        -> sanction(U, self_cleaning) .
+    // if the problem persists for five consecutive times, remove the unit agent
+    // completely as an option for subsequent filling orders
+    sanction-rule s2(U): reduce_times(T) & T >= 5 & .my_name(P)
+        -> sanction(P, remove_unit(U)) .
 }
