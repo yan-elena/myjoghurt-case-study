@@ -6,7 +6,9 @@ filling_status("yogurt", 5000).
 +!start
     <-  .println("container agent started").
 
-+filled(N)
-    <-  ?filling_status(L, A);
-        -+filling_status(L, A - N);
-        .println("remained  ", A - N, " in the container").
++level(L)
+    <-  ?filling_status(LQ, A);
+        -+filling_status(LQ, A - L);
+        .println("remained  ", A - L, " ", LQ, " mm in the container").
+
+{ include("$jacamoJar/templates/common-cartago.asl") }

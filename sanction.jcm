@@ -1,6 +1,5 @@
 mas sanction_demo {
 
-
     agent plant {
         ag-class: npl.NormativeAg("src/org/plant_norms.npl")
         join: plant
@@ -13,10 +12,10 @@ mas sanction_demo {
         focus: valve
     }
 
-    //agent valve
-
-    agent container
-
+    agent container {
+       join: plant
+       focus: valve
+    }
 
     agent bottle {
         join: plant
