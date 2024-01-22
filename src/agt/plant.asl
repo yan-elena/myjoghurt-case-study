@@ -5,7 +5,9 @@ reduce_times(0).
 !start.
 
 +!start : true
-    <- .println("plant agent started") .
+    <-  ?image_threshold(T);
+        .println("image threshold: ", T);
+        .println("plant agent started") .
 
 +!order(L, N)
     <-  .println("received order: ", L, " quantity: ", N);
@@ -16,7 +18,7 @@ reduce_times(0).
 
 +!fill_bottle(U, L, N, C)
     <-  .send(U, tell, fill_bottle(L, C));
-        .println("send order to ", U, " agent").
+        .println("send order to ", U, " agent to fill the bottle ", C).
 
 -!order(L, N)
     <- .println("no unit agent available to handle the order").
@@ -24,14 +26,12 @@ reduce_times(0).
 
 +filling_range(MN, MX)
     <-  .println("received filling range: min  ", MN, " max: ", MX);
-        .send(unit, tell, filling_range(MN, MX));
-        .
+        .send(unit, tell, filling_range(MN, MX)).
 
 +completed_bottle(U, L, C) : order_status(U, L, N, _)
     <-  .println("bottle ", C, " from ", U, " completed");
         -+order_status(U, L, N, C);
-        +fill_bottle(U, L, N, C);
-        .
+        +fill_bottle(U, L, N, C).
 
 
 
@@ -45,8 +45,7 @@ reduce_times(0).
         -+factors(U, S, I + 0.2, L);
         -+reduce_times(0);
 
-        .println("update unit image: ", I + 0.2);
-        .
+        .println("update unit image: ", I + 0.2).
 
 
 // negative sanction, less than the range
@@ -59,11 +58,10 @@ reduce_times(0).
         .println("update unit image: ", I - 0.2);
 
         ?order_status(U, LQ, N, C);
-        +completed_bottle(U, LQ, C + 1);
-        .
+        +completed_bottle(U, LQ, C + 1).
 
 
-// self cleaning sanction
+// reduce likelihood sanction
 
 +sanction(Ag, reduce_likelihood(U)) : .my_name(Ag)
     <-  .println("**** sanction: reduce unit's likelihood");
@@ -72,10 +70,7 @@ reduce_times(0).
         ?reduce_times(T);
         -+reduce_times(T+1);
 
-        .println("likelihood: ",  L - 0.2, " reduce times: ", T+1);
-        .
-
-        //!completed_bottle.
+        .println("likelihood: ",  L - 0.2, " reduce times: ", T+1).
 
 // remove unit sanction
 

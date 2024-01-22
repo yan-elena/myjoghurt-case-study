@@ -7,7 +7,9 @@ adjust_times(0).
 !start.
 
 +!start
-    <-  .println("unit agent started") .
+    <-  ?threshold(T);
+        .println("image threshold: ", T);
+        .println("unit agent started") .
 
 +!fill(L, N)
     <-  .println("call valve operation to fill the bottle ", N);
@@ -17,8 +19,7 @@ adjust_times(0).
 +level(L) : filling_range(MIN, MAX) & L>=MIN & L<=MAX
     <-  .println("filling level ", L, " in range");
         ?fill_bottle(LQ, N);
-        +fill(LQ, N);
-        .
+        +fill(LQ, N).
 
 
 // update factors sanction
@@ -42,24 +43,12 @@ adjust_times(0).
 // negative sanction, less than the range
 +sanction(Ag,update_factors("negative")) : level(L) & filling_range(MIN, MAX) & L<MIN & .my_name(Ag)
     <-  .println("**** negative sanction update_factors for ",Ag,", filled level less than the range ****");
-        !update_negative_factors(MIN - L);
-
-        //?fill_bottle(LQ, N);
-        //.send(plant, signal, completed_bottle(Ag, LQ, N));
-
-        //.println("send ", Ag, " ", LQ, " ", N );
-        .
+        !update_negative_factors(MIN - L).
 
 // negative sanction, more than the range
 +sanction(Ag,update_factors("negative")) : level(L) & filling_range(MIN, MAX) & L>MAX & .my_name(Ag)
     <-  .println("**** negative sanction update_factors for ",Ag,", filled level more than the range ****");
-        !update_negative_factors(MAX - L);
-
-        //?fill_bottle(LQ, N);
-        //.send(plant, signal, completed_bottle(Ag, LQ, N));
-
-        //.println("send ", Ag, " ", LQ, " ", N );
-        .
+        !update_negative_factors(MAX - L).
 
 
 
@@ -68,8 +57,7 @@ adjust_times(0).
 +sanction(Ag, adjust_flow_rate) : .my_name(Ag)
     <-  .println("**** sanction: activate valve's self cleaning routing");
         selfCleaning;
-        .println("finish cleaning");
-        .
+        .println("finish cleaning").
 
 // adjust flow rate sanction
 
@@ -81,8 +69,7 @@ adjust_times(0).
 
         ?adjust_times(T);
         -+adjust_times(T+1);
-        .println("number of consecutive adjustments executed: ", T+1);
-        .
+        .println("number of consecutive adjustments executed: ", T+1).
 
 +!update_negative_factors(M)       // magnitude
     <-  ?unfulfilled_count(C);

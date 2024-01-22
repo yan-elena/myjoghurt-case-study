@@ -28,7 +28,7 @@ public class ValveArtifact extends Artifact {
         log("...close valve");
 
         int level = random.nextInt(estimation - 10, estimation + 10);
-        log("filled, measuring level: " + level);
+        log("filled, measuring level: " + level + " mm");
         getObsProperty("level").updateValue(level);
     }
 
