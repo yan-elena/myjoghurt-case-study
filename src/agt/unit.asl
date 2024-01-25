@@ -11,23 +11,21 @@ adjust_times(0).
         .println("image threshold: ", T);
         .println("unit agent started") .
 
-+!fill(L, N)
++!fill(L, N, MN, MX)
     <-  .println("call valve operation to fill the bottle ", N);
         openValveAndFill.
 
 
-+level(L) : filling_range(MIN, MAX) & L>=MIN & L<=MAX
++level(L) : fill_bottle(LQ, N, MN, MX) & L>=MN & L<=MX
     <-  .println("filling level ", L, " in range");
-        ?fill_bottle(LQ, N);
-        +fill(LQ, N).
+        +fill(LQ, N, MN, MX).
 
 
 // update factors sanction
 
 // positive sanction, within the range
-+sanction(Ag,update_factors("positive")) : .my_name(Ag)
-    <-  .println("**** positive sanction update_factors for ",Ag," ****");
-        ?fill_bottle(L, N);
++!update_factors(L) : fill_bottle(LQ, N, MN, MX) &  L>=MN & L<=MX
+    <-  .println("**** S0 - update factors: positive");
         -+adjust_times(0);                      //reset the count
 
         ?learning_factor(I, _, E);
@@ -41,28 +39,27 @@ adjust_times(0).
         .
 
 // negative sanction, less than the range
-+sanction(Ag,update_factors("negative")) : level(L) & filling_range(MIN, MAX) & L<MIN & .my_name(Ag)
-    <-  .println("**** negative sanction update_factors for ",Ag,", filled level less than the range ****");
-        !update_negative_factors(MIN - L).
++!update_factors(L) : fill_bottle(LQ, N, MN, MX) & L<MN
+    <-  .println("**** S0 - update_factors: filled level less than the range ****");
+        !update_negative_factors(LQ, N, MN - L).
 
 // negative sanction, more than the range
-+sanction(Ag,update_factors("negative")) : level(L) & filling_range(MIN, MAX) & L>MAX & .my_name(Ag)
-    <-  .println("**** negative sanction update_factors for ",Ag,", filled level more than the range ****");
-        !update_negative_factors(MAX - L).
-
++!update_factors(L) : fill_bottle(LQ, N, MN, MX) & L>MX
+    <-  .println("**** S0 - update_factors: filled level more than the range ****");
+        !update_negative_factors(LQ, N, MX - L).
 
 
 // self cleaning sanction
 
 +sanction(Ag, adjust_flow_rate) : .my_name(Ag)
-    <-  .println("**** sanction: activate valve's self cleaning routing");
+    <-  .println("**** SANCTION S2: activate valve's self cleaning routing");
         selfCleaning;
         .println("finish cleaning").
 
 // adjust flow rate sanction
 
 +sanction(Ag, adjust_flow_rate) : .my_name(Ag)
-    <-  .println("**** sanction: adjust valve's flow rate estimation");
+    <-  .println("**** SANCTION S1: adjust valve's flow rate estimation");
         ?deviation_factor(P, M);
         getFlowRateEstimation(E);
         updateEstimation(E + M);
@@ -71,14 +68,13 @@ adjust_times(0).
         -+adjust_times(T+1);
         .println("number of consecutive adjustments executed: ", T+1).
 
-+!update_negative_factors(M)       // magnitude
++!update_negative_factors(LQ, N, M)       // magnitude
     <-  ?unfulfilled_count(C);
         -+unfulfilled_count(C+1);
 
         ?deviation_factor(P, _);
         -+deviation_factor("negative", M);
         ?learning_factor(I, _, E);
-        ?fill_bottle(_, N);
         -+learning_factor(I-0.2, (C+1)/(N+1), E);
 
         .println("update deviation factor: negative, ", M);
