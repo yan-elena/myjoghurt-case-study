@@ -3,6 +3,7 @@ deviation_factor(positive, 0). // deviation factor with polarity and magnitude
 learning_factor(1, 0, 1). // learning factor with the image, frequency and efficacy
 threshold(0.7).
 adjust_times(0).
+filling(0).
 
 !start.
 
@@ -16,8 +17,8 @@ adjust_times(0).
         openValveAndFill.
 
 
-+level(L) : fill_bottle(LQ, N, MN, MX) & L>=MN & L<=MX
-    <-  .println("filling level ", L, " in range");
++level(L): fill_bottle(LQ, N, MN, MX) // & L>=MN & L<=MX
+    <-  .println("filling level ", L);
         +fill(LQ, N, MN, MX).
 
 
@@ -35,7 +36,8 @@ adjust_times(0).
         .println("update deviation factor: positive, 0");
         .println("update learning factor, image: ", I+0.2, ", frequency: ", C/N, " efficacy: ", E);
 
-        .send(plant, signal, completed_bottle(Ag, L, N));
+        .my_name(Ag);
+        .send(plant, tell, completed_bottle(Ag, L, N));
         .
 
 // negative sanction, less than the range
@@ -54,7 +56,9 @@ adjust_times(0).
 +sanction(Ag, adjust_flow_rate) : .my_name(Ag)
     <-  .println("**** SANCTION S2: activate valve's self cleaning routing");
         selfCleaning;
-        .println("finish cleaning").
+        .println("finish cleaning");
+        ?fill_bottle(L, N, _, _);
+        .send(plant, tell, completed_bottle(Ag, L, N)).
 
 // adjust flow rate sanction
 
@@ -66,7 +70,9 @@ adjust_times(0).
 
         ?adjust_times(T);
         -+adjust_times(T+1);
-        .println("number of consecutive adjustments executed: ", T+1).
+        .println("number of consecutive adjustments executed: ", T+1);
+        ?fill_bottle(L, N, _, _);
+        .send(plant, tell, completed_bottle(Ag, L, N)).
 
 +!update_negative_factors(LQ, N, M)       // magnitude
     <-  ?unfulfilled_count(C);
@@ -78,7 +84,13 @@ adjust_times(0).
         -+learning_factor(I-0.2, (C+1)/(N+1), E);
 
         .println("update deviation factor: negative, ", M);
-        .println("update learning factor, image: ", I-0.2, ", frequency: ", (C+1)/(N+1), " efficacy: ", E).
+        .println("update learning factor, image: ", I-0.2, ", frequency: ", (C+1)/(N+1), " efficacy: ", E);
+
+        if (threshold(T) & I-0.2 > T) {
+            ?fill_bottle(L, N, _, _);
+            .my_name(Ag);
+            .send(plant, tell, completed_bottle(Ag, L, N));
+        }.
 
 
 +active(obligation(Ag,Norm,What,Deadline)) : .my_name(Ag)

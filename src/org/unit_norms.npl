@@ -1,16 +1,17 @@
 scope unit_norms {
 
-    norm n1: fill_bottle(L, N) & .my_name(U)
-        -> obligation(U, n1, fill(L, N), `4 seconds`)
-        if fulfilled: s0("positive")
-        if unfulfilled: s0("negative"), s1(L, N), s2.
+    // norm to fill a single bottle no. N1 with the specific liquid LQ within the range MN-MX
+    norm n1: fill_bottle(LQ, N1, MN, MX) & .my_name(U)
+        // when the level is less that MIN and greater than MAX, the obligation is unfulfilled
+        -> obligation(U, n1, fill(LQ, N, MN, MX), `4 seconds`).         // level(L) & L<MN & L>MX) .
 
-    // update the factors
-    sanction-rule s0(P) : .my_name(U)
-        ->  sanction(U, update_factors(P)) .
+    // norm to update the factors when the bottle is filled
+    norm n2: fill(LQ, N, MN, MX) & level(L) & .my_name(U)
+        -> obligation(U, n2, update_factors(L), deviation_factor("negative", _))            //L<MN & L>MX
+        if unfulfilled: s1(N), s2 .
 
     // adjust its flow rate estimation, if the image is below a threshold -> directed sanction
-    sanction-rule s1(L, N) : learning_factor(I, _, _) & threshold(T) & I < T
+    sanction-rule s1(N) : learning_factor(I, _, _) & threshold(T) & I < T
                            & adjust_times(T2) & T2 <= 3 & .my_name(U)
         ->  sanction(U, adjust_flow_rate) .
 

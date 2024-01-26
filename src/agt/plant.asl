@@ -31,12 +31,10 @@ reduce_times(0).
         .println("try again to send the order...");
         !order(LQ, N, MN, MX).
 
-+completed_bottle(U, L, C) : order_status(U, L, N, _, MN, MX)
-    <-  .println("bottle ", C, " from ", U, " completed");
-        -+order_status(U, L, N, C, MN, MX);
-        +fill_bottle(U, L, N, C, MN, MX).
-
-
++completed(LQ, C) : completed_bottle(U, L, C) & order_status(U, LQ, N, C -1, MN, MX)
+    <-  .println("bottle completed");
+        -+order_status(U, LQ, N, C, MN, MX);
+        +fill_bottle(U, LQ, N, C, MN, MX).
 
 // update factors sanction
 
@@ -48,10 +46,11 @@ reduce_times(0).
         -+factors(U, S, A, I + 0.2, L);
         -+reduce_times(0);
 
-        .println("update unit image: ", I + 0.2).
+        .println("update unit image: ", I + 0.2);
+        +completed(LQ, C + 1).
 
 
-// negative sanction, less than the range
+// negative sanction, outside the range
 +sanction(Ag,update_factors(U, "negative")) : .my_name(Ag)
     <-  .println("**** S0: negative sanction update_factors for ",U,"****");
 
@@ -61,7 +60,8 @@ reduce_times(0).
         .println("update unit image: ", I - 0.2);
 
         ?order_status(U, LQ, N, C, MN, MX);
-        +completed_bottle(U, LQ, C + 1).
+        +completed(LQ, C + 1). //todo: controllare i casi
+
 
 
 // reduce likelihood sanction
@@ -73,7 +73,8 @@ reduce_times(0).
         ?reduce_times(T);
         -+reduce_times(T+1);
 
-        .println("likelihood: ",  L - 0.2, " reduce times: ", T+1).
+        .println("likelihood: ",  L - 0.2, " reduce times: ", T+1);
+        +completed(LQ, C + 1).
 
 // remove unit sanction
 
@@ -82,8 +83,7 @@ reduce_times(0).
         ?factors(U, _, A, I, L);
         -+factors(U, false, A, I, L);
 
-        .println("ALARM: unit agent removed ");
-        .
+        .println("ALARM: unit agent removed ").
 
 
 +active(obligation(Ag,Norm,What,Deadline)) : .my_name(Ag)
