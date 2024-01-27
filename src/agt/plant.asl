@@ -31,10 +31,19 @@ reduce_times(0).
         .println("try again to send the order...");
         !order(LQ, N, MN, MX).
 
-+completed(LQ, C) : completed_bottle(U, L, C) & order_status(U, LQ, N, C -1, MN, MX)
+/*
++level(L): order_status(U, LQ, N, C, MN, MX) & L > MN & L < MX
     <-  .println("bottle completed");
-        -+order_status(U, LQ, N, C, MN, MX);
-        +fill_bottle(U, LQ, N, C, MN, MX).
+        +fill_bottle(U, LQ, N, C + 1, MN, MX);  //fulfill obligation
+        -+order_status(U, LQ, N, C + 1, MN, MX).
+*/
+
++level(L) : order_status(U, LQ, N, C, MN, MX) & L > MN & L < MX
+    <-  +fill_bottle(U, LQ, N, C + 1, MN, MX);  //fulfill obligation
+        +completed(LQ, C + 1, N, L).
+
++level(L) : order_status(U, LQ, N, C, MN, MX)
+    <-  +completed(LQ, C + 1, N, L).
 
 // update factors sanction
 
@@ -47,7 +56,9 @@ reduce_times(0).
         -+reduce_times(0);
 
         .println("update unit image: ", I + 0.2);
-        +completed(LQ, C + 1).
+        ?order_status(U, LQ, N, C, MN, MX);
+        -+order_status(U, LQ, N, C + 1, MN, MX).    //next bottle
+        //+completed(LQ, C + 1).
 
 
 // negative sanction, outside the range
@@ -60,7 +71,8 @@ reduce_times(0).
         .println("update unit image: ", I - 0.2);
 
         ?order_status(U, LQ, N, C, MN, MX);
-        +completed(LQ, C + 1). //todo: controllare i casi
+        -+order_status(U, LQ, N, C + 1, MN, MX).    //next bottle
+        //+completed(LQ, C + 1). //todo: controllare i casi
 
 
 
@@ -74,7 +86,9 @@ reduce_times(0).
         -+reduce_times(T+1);
 
         .println("likelihood: ",  L - 0.2, " reduce times: ", T+1);
-        +completed(LQ, C + 1).
+        ?order_status(U, LQ, N, C, MN, MX);
+        -+order_status(U, LQ, N, C + 1, MN, MX).        //next bottle
+        //+completed(LQ, C + 1).
 
 // remove unit sanction
 

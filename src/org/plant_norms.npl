@@ -1,7 +1,8 @@
 scope plant_norms {
 
-    norm n2: order_status(U, L, N, C, MN, MX) & C < N & .my_name(P)
-        -> obligation(P, n2, fill_bottle(U, L, N, C + 1, MN, MX), `7 seconds`)
+    // order_status(unit_agent, liquid_type, order_quantity, current_number, min_level, max_level)
+    norm n2: order_status(U, LQ, N, C, MN, MX) & C < N & .my_name(P)
+        -> obligation(P, n2, fill_bottle(U, LQ, N, C + 1, MN, MX), completed(LQ, C + 1, N, L) & L < MN & L > MX)
        if fulfilled: s0(U, "positive")
        if unfulfilled: s0(U, "negative"), s3(U, L, N), s4(U).
 

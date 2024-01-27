@@ -37,7 +37,7 @@ filling(0).
         .println("update learning factor, image: ", I+0.2, ", frequency: ", C/N, " efficacy: ", E);
 
         .my_name(Ag);
-        .send(plant, tell, completed_bottle(Ag, L, N));
+        .send(plant, tell, completed_bottle(Ag, LQ, L, N));
         .
 
 // negative sanction, less than the range
@@ -57,8 +57,9 @@ filling(0).
     <-  .println("**** SANCTION S2: activate valve's self cleaning routing");
         selfCleaning;
         .println("finish cleaning");
-        ?fill_bottle(L, N, _, _);
-        .send(plant, tell, completed_bottle(Ag, L, N)).
+        ?fill_bottle(LQ, N, _, _);
+        ?level(L);
+        .send(plant, tell, completed_bottle(Ag, LQ, L, N)).
 
 // adjust flow rate sanction
 
@@ -71,8 +72,9 @@ filling(0).
         ?adjust_times(T);
         -+adjust_times(T+1);
         .println("number of consecutive adjustments executed: ", T+1);
-        ?fill_bottle(L, N, _, _);
-        .send(plant, tell, completed_bottle(Ag, L, N)).
+        ?level(L);
+        ?fill_bottle(LQ, N, _, _);
+        .send(plant, tell, completed_bottle(Ag, LQ, L, N)).
 
 +!update_negative_factors(LQ, N, M)       // magnitude
     <-  ?unfulfilled_count(C);
@@ -87,9 +89,9 @@ filling(0).
         .println("update learning factor, image: ", I-0.2, ", frequency: ", (C+1)/(N+1), " efficacy: ", E);
 
         if (threshold(T) & I-0.2 > T) {
-            ?fill_bottle(L, N, _, _);
+            ?level(L);
             .my_name(Ag);
-            .send(plant, tell, completed_bottle(Ag, L, N));
+            .send(plant, tell, completed_bottle(Ag, LQ, L, N));
         }.
 
 
