@@ -17,9 +17,10 @@ filling(0).
         openValveAndFill(N).
 
 
-+level(N, L): fill_bottle(LQ, N, MN, MX)
++level(N, L): fill_bottle(LQ, N, MN, MX) & .my_name(Ag)
     <-  .println("bottle no. ", N, " filled, level ", L);
-        +fill(LQ, N, MN, MX).
+        +fill(LQ, N, MN, MX);                                   //fulfilled obligation
+        .send(plant, tell, completed_bottle(Ag, LQ, L, N)).     //notify plant agent of completing bottle
 
 
 // update factors sanction
@@ -33,13 +34,11 @@ filling(0).
         ?unfulfilled_count(C);
         -+learning_factor(I+0.2, C/N, E);       //update the learning factor
         -+deviation_factor("positive", 0);      //update the deviation factor
+
         .println("update deviation factor: positive, 0");
         .println("update learning factor, image: ", I+0.2, ", frequency: ", C/N, " efficacy: ", E);
 
-        .my_name(Ag);
-        //.send(plant, tell, completed_bottle(Ag, LQ, L, N)); todo
-
-        +update_factors(N, L);
+        +update_factors(N, L);                  //fulfilled obligation
         .
 
 // negative sanction, less than the range
@@ -58,10 +57,7 @@ filling(0).
 +sanction(Ag, self_cleaning) : .my_name(Ag)
     <-  .println("**** SANCTION S2: activate valve's cleaning routing");
         selfCleaning;
-        .println("finish cleaning");
-        ?fill_bottle(LQ, N, _, _);
-        ?level(N, L).
-        //.send(plant, tell, completed_bottle(Ag, LQ, L, N)). //todo check
+        .println("finish cleaning").
 
 // adjust flow rate sanction
 
@@ -76,7 +72,6 @@ filling(0).
         .println("number of consecutive adjustments executed: ", T+1);
         ?level(N, L);
         ?fill_bottle(LQ, N, _, _).
-        //.send(plant, tell, completed_bottle(Ag, LQ, L, N)). //todo check
 
 +!update_negative_factors(LQ, N, L, M)       // liquid, number, level, magnitude
     <-  ?unfulfilled_count(C);
@@ -91,14 +86,6 @@ filling(0).
         .println("update learning factor, image: ", I-0.2, ", frequency: ", (C+1)/(N+1), " efficacy: ", E);
 
         +update_factors(N, L).
-
-        /*
-        if (threshold(T) & I-0.2 > T) { todo: check
-            ?level(N, L);
-            .my_name(Ag);
-            .send(plant, tell, completed_bottle(Ag, LQ, L, N)).
-        }
-        */
 
 
 +active(obligation(Ag,Norm,What,Deadline)) : .my_name(Ag)

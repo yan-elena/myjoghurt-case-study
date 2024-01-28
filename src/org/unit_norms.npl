@@ -6,9 +6,9 @@ scope unit_norms {
         -> obligation(U, n1, fill(LQ, C, MN, MX), level(C, L) & (L<MN | L>MX)) .
 
     // norm to update the factors when the bottle is filled
-    norm n2: level(N, L) & .my_name(U)
+    norm n2: level(X, L) & .my_name(U)
         // update the factors and is unfulfilled if the image is below a threshold
-        -> obligation(U, n2, update_factors(N, L), learning_factor(I, _, _) & threshold(T) & I < T)            //L<MN & L>MX
+        -> obligation(U, n2, update_factors(X, L), learning_factor(I, _, _) & threshold(T) & I < T)            //L<MN & L>MX
         if unfulfilled: s1, s2 .
 
     // sanction s1: signal to adjust the valve's flow rate estimation

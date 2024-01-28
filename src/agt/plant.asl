@@ -1,12 +1,11 @@
 image_threshold(0.3).
-
-// factors(unit, active, available, image, likelihood)
-factors(unit, true, true, 1, 1).     //factors of the unit agent with its active/removed state, image and likelihood
-reduce_times(0).
+                                    // factors(unit, active, available, image, likelihood)
+factors(unit, true, true, 1, 1).    //factors of the unit agent with its active/removed state, image and likelihood
+reduce_times(unit, 0).
 
 !start.
 
-+!start : true
++!start
     <-  ?image_threshold(T);
         .println("image threshold: ", T);
         .println("plant agent started") .
@@ -14,16 +13,13 @@ reduce_times(0).
 +!order(LQ, N, MN, MX)
     <-  .println("received order: ", LQ, " quantity: ", N);
         .println("decide which unit agent to assign the order...");
+
         ?factors(U, true, true, I, L);      //select an active and available unit agent
 
         .println("selected agent to handle the order: ", U);
 
         -+factors(U, true, false, I, L);    //update unit availability
-        +order_status(U, LQ, N, 0, MN, MX).
-
-+!fill_bottle(U, L, N, C, MN, MX)
-    <-  .send(U, tell, fill_bottle(L, C, MN, MX));
-        .println("send order to ", U, " agent to fill the bottle ", C).
+        +order_status(U, LQ, N, 0, MN, MX). //start the filling process
 
 -!order(LQ, N, MN, MX)
     <-  .println("no unit agent available to handle the order");
@@ -31,49 +27,43 @@ reduce_times(0).
         .println("try again to send the order...");
         !order(LQ, N, MN, MX).
 
-/*
-+level(L): order_status(U, LQ, N, C, MN, MX) & L > MN & L < MX
-    <-  .println("bottle completed");
-        +fill_bottle(U, LQ, N, C + 1, MN, MX);  //fulfill obligation
-        -+order_status(U, LQ, N, C + 1, MN, MX).
-*/
++!fill_bottle(U, LQ, N, X, MN, MX)
+    <-  .send(U, tell, fill_bottle(LQ, X, MN, MX));  //tell the unit agent to fill the bottle X with liquid LQ in the range MN-MX
+        .println("send order to ", U, " agent to fill the bottle ", X).
 
-+level(N, L) : order_status(U, LQ, N, C, MN, MX) & L > MN & L < MX
-    <-  +fill_bottle(U, LQ, N, C + 1, MN, MX);  //fulfill obligation
-        +completed(LQ, C + 1, N, L).
++completed_bottle(U, LQ, L, X) : order_status(U, LQ, N, X-1, MN, MX)   //unit agent has completed the bottle
+    <-  +fill_bottle(U, LQ, N, X, MN, MX).     //fulfilled obligation
 
-+level(N, L) : order_status(U, LQ, N, C, MN, MX)
-    <-  +completed(LQ, C + 1, N, L).
 
-// update factors sanction
+// update unit's factors, positive
++!update_factors(U, X, L) : fill_bottle(U, LQ, N, X, MN, MX) &  L>=MN & L<=MX
+    <-  .println("**** S0 - update_factors for ",U," ****");
 
-// positive sanction, within the range
-+sanction(Ag,update_factors(U, "positive")) : .my_name(Ag)
-    <-  .println("**** positive sanction update_factors for ",Ag," ****");
-
-        ?factors(U, S, A, I, L);
-        -+factors(U, S, A, I + 0.2, L);
-        -+reduce_times(0);
+        ?factors(U, S, A, I, LI);
+        -+factors(U, S, A, I + 0.2, LI);                //update unit images
+        -+reduce_times(U, 0);                           //reset the count of reducing image
 
         .println("update unit image: ", I + 0.2);
-        ?order_status(U, LQ, N, C, MN, MX);
-        -+order_status(U, LQ, N, C + 1, MN, MX).    //next bottle
-        //+completed(LQ, C + 1).
+
+        +update_factors(U, X, L).                       //fulfilled obligation
 
 
-// negative sanction, outside the range
-+sanction(Ag,update_factors(U, "negative")) : .my_name(Ag)
-    <-  .println("**** S0: negative sanction update_factors for ",U,"****");
+// update unit's factors, negative
++!update_factors(U, X, L) : fill_bottle(U, LQ, N, X, MN, MX)
+    <-  .println("**** S0 - update_factors for ",U,"****");
 
-        ?factors(U, S, A, I, L);
-        -+factors(U, S, A, I - 0.2, L);
+        ?factors(U, S, A, I, LI);
+        -+factors(U, S, A, I - 0.2, LI);                 //update unit factors
 
         .println("update unit image: ", I - 0.2);
 
-        ?order_status(U, LQ, N, C, MN, MX);
-        -+order_status(U, LQ, N, C + 1, MN, MX).    //next bottle
-        //+completed(LQ, C + 1). //todo: controllare i casi
+        +update_factors(U, X, L).                       //fulfilled obligation
 
+
++sanction(Ag, fill_next_bottle(U, LQ, L, X))
+    <-  .println("**** SANCTION S0: bottle ", X, " completed");
+        ?order_status(U, LQ, N, _, MN, MX);
+        -+order_status(U, LQ, N, X, MN, MX).            // update order status, fill next bottle
 
 
 // reduce likelihood sanction
@@ -82,13 +72,14 @@ reduce_times(0).
     <-  .println("**** SANCTION S3: reduce unit's likelihood");
         ?factors(U, S, A, I, L);
         -+factors(U, S, A, I, L - 0.2);
-        ?reduce_times(T);
-        -+reduce_times(T+1);
+        ?reduce_times(U, T);
+        -+reduce_times(U, T+1);
 
         .println("likelihood: ",  L - 0.2, " reduce times: ", T+1);
+
+        .println("next bottle");
         ?order_status(U, LQ, N, C, MN, MX);
-        -+order_status(U, LQ, N, C + 1, MN, MX).        //next bottle
-        //+completed(LQ, C + 1).
+        -+order_status(U, LQ, N, C + 1, MN, MX).        //update the order status
 
 // remove unit sanction
 

@@ -1,23 +1,24 @@
 scope plant_norms {
 
     // order_status(unit_agent, liquid_type, order_quantity, current_number, min_level, max_level)
-    norm n2: order_status(U, LQ, N, C, MN, MX) & C < N & .my_name(P)
-        -> obligation(P, n2, fill_bottle(U, LQ, N, C + 1, MN, MX), completed(LQ, C + 1, N, L) & L < MN & L > MX)
-       if fulfilled: s0(U, "positive")
-       if unfulfilled: s0(U, "negative"), s3(U, L, N), s4(U).
+    norm n1: order_status(U, LQ, N, C, MN, MX) & C < N & .my_name(P)
+        -> obligation(P, n1, fill_bottle(U, LQ, N, C + 1, MN, MX), level(C, L) & (L<MN | L>MX)) .
 
-    // update the factors
-    sanction-rule s0(U, S) : .my_name(P)
-        ->  sanction(P, update_factors(U, S)) .
+    // when unit agent completed filling the bottle, a norm is for updating its factors
+    norm n2: completed_bottle(U, LQ, L, X) & .my_name(P)
+        -> obligation(P, n2, update_factors(U, X, L), factors(U, _, I, _) & image_threshold(T) & I < T)
+        if fulfilled: s0(U, LQ, L, X)
+        if unfulfilled: s3(U), s4(U).
 
-    // if the image is below a threshold, reduce the unit agent’s likelihood of being
-    // selected for subsequent filling orders
-    sanction-rule s3(U, L, N) : factors(U, _, I, _) & image_threshold(T) & I < T
-                           & reduce_times(T2) & T2 < 5 & .my_name(P)
+    //sanction s0: update the status for completing bottle
+    sanction-rule s0(U, LQ, L, X) : .my_name(P)
+        ->  sanction(P, fill_next_bottle(U, LQ, L, X)) .
+
+    // sanction s3: reduce the unit agent’s likelihood of being selected for subsequent filling orders
+    sanction-rule s3(U) : reduce_times(T) & T < 5 & .my_name(P)
         ->  sanction(P, reduce_likelihood(U)) .
 
-    // if the problem persists for five consecutive times, remove the unit agent
-    // completely as an option for subsequent filling orders
+    // sanction s4: remove the unit agent completely as an option for subsequent filling orders
     sanction-rule s4(U): reduce_times(T) & T >= 5 & .my_name(P)
         -> sanction(P, remove_unit(U)) .
 }
