@@ -14,11 +14,11 @@ filling(0).
 
 +!fill(L, N, MN, MX)
     <-  .println("call valve operation to fill the bottle ", N);
-        openValveAndFill.
+        openValveAndFill(N).
 
 
-+level(L): fill_bottle(LQ, N, MN, MX) // & L>=MN & L<=MX
-    <-  .println("filling level ", L);
++level(N, L): fill_bottle(LQ, N, MN, MX) // & L>=MN & L<=MX
+    <-  .println("bottle no. ", N, " filled, level ", L);
         +fill(LQ, N, MN, MX).
 
 

@@ -6,7 +6,7 @@
        .send(plant, achieve, order("yogurt", 10, 200, 205));
        .
 
-+level(L)
++level(N, L)
     <- .println("observed level: ", L, " mm").
 
 

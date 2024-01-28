@@ -1,5 +1,6 @@
 import cartago.Artifact;
 import cartago.OPERATION;
+import cartago.ObsProperty;
 import cartago.OpFeedbackParam;
 
 import java.util.Random;
@@ -12,11 +13,11 @@ public class ValveArtifact extends Artifact {
     public void init(int estimation) {
         this.estimation = estimation;
         this.random = new Random();
-        defineObsProperty("level", 0);
+        defineObsProperty("level", 0, 0);
     }
 
     @OPERATION
-    void openValveAndFill() {
+    void openValveAndFill(int index) {
 
         log("...open valve");
         log("...fill");
@@ -29,7 +30,9 @@ public class ValveArtifact extends Artifact {
 
         int level = random.nextInt(estimation - 10, estimation + 10);
         log("filled, measuring level: " + level + " mm");
-        getObsProperty("level").updateValue(level);
+        ObsProperty levelObsProp = getObsProperty("level");
+        levelObsProp.updateValue(0, index);
+        levelObsProp.updateValue(1, level);
     }
 
     @OPERATION

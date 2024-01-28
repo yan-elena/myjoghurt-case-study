@@ -6,7 +6,7 @@ filling_status("yogurt", 5000).
 +!start
     <-  .println("container agent started").
 
-+level(L)
++level(N, L)
     <-  ?filling_status(LQ, A);
         -+filling_status(LQ, A - L);
         .println("remained  ", A - L, " ", LQ, " mm in the container").

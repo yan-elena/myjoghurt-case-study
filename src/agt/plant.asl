@@ -38,11 +38,11 @@ reduce_times(0).
         -+order_status(U, LQ, N, C + 1, MN, MX).
 */
 
-+level(L) : order_status(U, LQ, N, C, MN, MX) & L > MN & L < MX
++level(N, L) : order_status(U, LQ, N, C, MN, MX) & L > MN & L < MX
     <-  +fill_bottle(U, LQ, N, C + 1, MN, MX);  //fulfill obligation
         +completed(LQ, C + 1, N, L).
 
-+level(L) : order_status(U, LQ, N, C, MN, MX)
++level(N, L) : order_status(U, LQ, N, C, MN, MX)
     <-  +completed(LQ, C + 1, N, L).
 
 // update factors sanction
