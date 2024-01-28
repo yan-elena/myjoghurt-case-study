@@ -3,16 +3,16 @@ scope unit_norms {
     // norm to fill a single bottle no. N1 with the specific liquid LQ within the range MN-MX
     norm n1: fill_bottle(LQ, C, MN, MX) & .my_name(U)
         // when the level is less that MIN and greater than MAX, the obligation is unfulfilled
-        -> obligation(U, n1, fill(LQ, C, MN, MX), `4 seconds`).         // level(L) & L<MN & L>MX) .
+        -> obligation(U, n1, fill(LQ, C, MN, MX), level(C, L) & (L<MN | L>MX)) .
 
     // norm to update the factors when the bottle is filled
-    norm n2: fill(LQ, N, MN, MX) & level(L) & .my_name(U)
-        -> obligation(U, n2, update_factors(L), deviation_factor("negative", _))            //L<MN & L>MX
+    norm n2: fill(LQ, N, MN, MX) & level(N, L) & .my_name(U)
+        // update the factors and is unfulfilled if the image is below a threshold
+        -> obligation(U, n2, update_factors(N, L), learning_factor(I, _, _) & threshold(T) & I < T)            //L<MN & L>MX
         if unfulfilled: s1(N), s2 .
 
-    // adjust its flow rate estimation, if the image is below a threshold -> directed sanction
-    sanction-rule s1(N) : learning_factor(I, _, _) & threshold(T) & I < T
-                           & adjust_times(T2) & T2 <= 3 & .my_name(U)
+    // adjust its flow rate estimation -> directed sanction
+    sanction-rule s1(N) : adjust_times(T2) & T2 <= 3 & .my_name(U)
         ->  sanction(U, adjust_flow_rate) .
 
     // signal to activate the valve's self cleaning routine -> directed sanction
