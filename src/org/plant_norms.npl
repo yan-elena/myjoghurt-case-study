@@ -6,7 +6,7 @@ scope plant_norms {
 
     // when unit agent completed filling the bottle, a norm is for updating its factors
     norm n2: completed_bottle(U, LQ, L, X) & .my_name(P)
-        -> obligation(P, n2, update_factors(U, X, L), factors(U, _, I, _) & image_threshold(T) & I < T)
+        -> obligation(P, n2, update_factors(U, X, L), factors(U, _, I, _, _) & threshold(T, _) & I < T)
         if fulfilled: s0(U, LQ, L, X)
         if unfulfilled: s3(U), s4(U).
 
@@ -15,10 +15,10 @@ scope plant_norms {
         ->  sanction(P, fill_next_bottle(U, LQ, L, X)) .
 
     // sanction s3: reduce the unit agent’s likelihood of being selected for subsequent filling orders
-    sanction-rule s3(U) : reduce_times(T) & T < 5 & .my_name(P)
+    sanction-rule s3(U) : factors(U, _, _, _, _, C) & threshold(_, T) & C < T & .my_name(P)
         ->  sanction(P, reduce_likelihood(U)) .
 
     // sanction s4: remove the unit agent completely as an option for subsequent filling orders
-    sanction-rule s4(U): reduce_times(T) & T >= 5 & .my_name(P)
+    sanction-rule s4(U): factors(U, _, _, _, _, C) & threshold(_, T) & C >= T & .my_name(P)
         -> sanction(P, remove_unit(U)) .
 }

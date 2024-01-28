@@ -1,12 +1,11 @@
-image_threshold(0.3).
-                                    // factors(unit, active, available, image, likelihood, count_reduce_times)
-factors(unit, true, true, 1, 1, 0).    //factors of the unit agent with its active/removed state, image and likelihood
-
+threshold(0.4, 5).                      // image and reduction count threshold
+factors(unit, true, true, 1, 1, 0).     //factors of the unit agent with its active/removed state, image and likelihood
+                                        // factors(unit, active, available, image, likelihood, count_reduce_times)
 !start.
 
 +!start
-    <-  ?image_threshold(T);
-        .println("image threshold: ", T);
+    <-  ?threshold(I, R);
+        .println("image threshold: ", I, " reduction count threshold: ", R);
         .println("plant agent started") .
 
 +!order(LQ, N, MN, MX)
@@ -36,7 +35,7 @@ factors(unit, true, true, 1, 1, 0).    //factors of the unit agent with its acti
 
 // update unit's factors, positive
 +!update_factors(U, X, L) : fill_bottle(U, LQ, N, X, MN, MX) &  L>=MN & L<=MX
-    <-  .println("**** S0 - update_factors for ",U," ****");
+    <-  .println("**** update positive factors for ",U," ****");
 
         ?factors(U, S, A, I, K, T);
         -+factors(U, S, A, I + 0.2, K, T);             //update unit images
@@ -48,7 +47,7 @@ factors(unit, true, true, 1, 1, 0).    //factors of the unit agent with its acti
 
 // update unit's factors, negative
 +!update_factors(U, X, L) : fill_bottle(U, LQ, N, X, MN, MX)
-    <-  .println("**** S0 - update_factors for ",U,"****");
+    <-  .println("**** update negative factors for ",U,"****");
 
         ?factors(U, S, A, I, K, T);
         -+factors(U, S, A, I - 0.2, K, T);                 //update unit factors

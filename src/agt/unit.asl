@@ -20,12 +20,9 @@ adjust_count(0).
         +fill(LQ, X, MN, MX);                                   //fulfilled obligation
         .send(plant, tell, completed_bottle(Ag, LQ, L, X)).     //notify plant agent of completing bottle
 
-
-// update factors sanction
-
 // positive sanction, within the range
 +!update_factors(N, L) : fill_bottle(LQ, N, MN, MX) &  L>=MN & L<=MX
-    <-  .println("**** S0 - update factors: positive");
+    <-  .println("**** update factors: positive");
         -+adjust_count(0);                      //reset the count
 
         ?learning_factor(I, _, E);
@@ -36,26 +33,33 @@ adjust_count(0).
         .println("update deviation factor: positive, 0");
         .println("update learning factor, image: ", I+0.2, ", frequency: ", C/N, " efficacy: ", E);
 
-        +update_factors(N, L);                  //fulfilled obligation
-        .
+        +update_factors(N, L).                  //fulfilled obligation
 
 // negative sanction, less than the range
 +!update_factors(N, L) : fill_bottle(LQ, N, MN, MX) & L<MN
-    <-  .println("**** S0 - update_factors: filled level less than the range ****");
+    <-  .println("**** update negative factors: filled level less than the range ****");
         !update_negative_factors(LQ, N, L, MN - L).
 
 // negative sanction, more than the range
 +!update_factors(N, L) : fill_bottle(LQ, N, MN, MX) & L>MX
-    <-  .println("**** S0 - update_factors: filled level more than the range ****");
+    <-  .println("**** update negative factors: filled level more than the range ****");
         !update_negative_factors(LQ, N, L, MX - L).
 
-/*
++!update_negative_factors(LQ, N, L, M)       // liquid, number, level, magnitude
+    <-  ?unfulfilled_count(C);
+        -+unfulfilled_count(C+1);
 
-// completed bottle sanction
-+sanction(Ag, completed_bottle(LQ, L, X)) : .my_name(Ag)
-    <-  .println("**** S0: bottle no. ", X, " completed, level ", L);
-        .send(plant, tell, completed_bottle(Ag, LQ, L, X)).     //notify plant agent of completing bottle
-*/
+        ?deviation_factor(P, _);
+        -+deviation_factor("negative", M);
+        ?learning_factor(I, _, E);
+        -+learning_factor(I-0.2, (C+1)/(N+1), E);
+
+        .println("update deviation factor: negative, ", M);
+        .println("update learning factor, image: ", I-0.2, ", frequency: ", (C+1)/(N+1), " efficacy: ", E);
+
+        +update_factors(N, L).
+
+// SANCTIONS
 
 // self cleaning sanction
 +sanction(Ag, self_cleaning) : .my_name(Ag)
@@ -73,21 +77,6 @@ adjust_count(0).
         ?adjust_count(T);
         -+adjust_count(T+1);
         .println("number of consecutive adjustments executed: ", T+1).
-
-+!update_negative_factors(LQ, N, L, M)       // liquid, number, level, magnitude
-    <-  ?unfulfilled_count(C);
-        -+unfulfilled_count(C+1);
-
-        ?deviation_factor(P, _);
-        -+deviation_factor("negative", M);
-        ?learning_factor(I, _, E);
-        -+learning_factor(I-0.2, (C+1)/(N+1), E);
-
-        .println("update deviation factor: negative, ", M);
-        .println("update learning factor, image: ", I-0.2, ", frequency: ", (C+1)/(N+1), " efficacy: ", E);
-
-        +update_factors(N, L).
-
 
 +active(obligation(Ag,Norm,What,Deadline)) : .my_name(Ag)
    <- .print("obliged to ", What);
