@@ -16,11 +16,10 @@ filling(0).
     <-  .println("call valve operation to fill the bottle ", N);
         openValveAndFill(N).
 
-
-+level(N, L): fill_bottle(LQ, N, MN, MX) & .my_name(Ag)
-    <-  .println("bottle no. ", N, " filled, level ", L);
-        +fill(LQ, N, MN, MX);                                   //fulfilled obligation
-        .send(plant, tell, completed_bottle(Ag, LQ, L, N)).     //notify plant agent of completing bottle
++level(N, L): fill_bottle(LQ, X, MN, MX) & .my_name(Ag)
+    <-  .println("bottle no. ", X, " filled, level ", L);
+        +fill(LQ, X, MN, MX);                                   //fulfilled obligation
+        .send(plant, tell, completed_bottle(Ag, LQ, L, X)).     //notify plant agent of completing bottle
 
 
 // update factors sanction
@@ -51,16 +50,21 @@ filling(0).
     <-  .println("**** S0 - update_factors: filled level more than the range ****");
         !update_negative_factors(LQ, N, L, MX - L).
 
+/*
+
+// completed bottle sanction
++sanction(Ag, completed_bottle(LQ, L, X)) : .my_name(Ag)
+    <-  .println("**** S0: bottle no. ", X, " completed, level ", L);
+        .send(plant, tell, completed_bottle(Ag, LQ, L, X)).     //notify plant agent of completing bottle
+*/
 
 // self cleaning sanction
-
 +sanction(Ag, self_cleaning) : .my_name(Ag)
     <-  .println("**** SANCTION S2: activate valve's cleaning routing");
         selfCleaning;
         .println("finish cleaning").
 
 // adjust flow rate sanction
-
 +sanction(Ag, adjust_flow_rate) : .my_name(Ag)
     <-  .println("**** SANCTION S1: adjust valve's flow rate estimation");
         ?deviation_factor(P, M);
@@ -69,9 +73,7 @@ filling(0).
 
         ?adjust_times(T);
         -+adjust_times(T+1);
-        .println("number of consecutive adjustments executed: ", T+1);
-        ?level(N, L);
-        ?fill_bottle(LQ, N, _, _).
+        .println("number of consecutive adjustments executed: ", T+1).
 
 +!update_negative_factors(LQ, N, L, M)       // liquid, number, level, magnitude
     <-  ?unfulfilled_count(C);

@@ -1,14 +1,14 @@
 scope unit_norms {
 
-    // norm to fill a single bottle no. N1 with the specific liquid LQ within the range MN-MX
-    norm n1: fill_bottle(LQ, C, MN, MX) & .my_name(U)
+    // norm to fill a single bottle no. X with the specific liquid LQ within the range MN-MX
+    norm n1: fill_bottle(LQ, X, MN, MX) & .my_name(U)
         // when the level is less that MIN or greater than MAX, the obligation is unfulfilled
-        -> obligation(U, n1, fill(LQ, C, MN, MX), level(C, L) & (L<MN | L>MX)) .
+        -> obligation(U, n1, fill(LQ, X, MN, MX), level(C, L) & (L<MN | L>MX)) .
 
     // norm to update the factors when the bottle is filled
     norm n2: level(X, L) & .my_name(U)
         // update the factors and is unfulfilled if the image is below a threshold
-        -> obligation(U, n2, update_factors(X, L), learning_factor(I, _, _) & threshold(T) & I < T)            //L<MN & L>MX
+        -> obligation(U, n2, update_factors(X, L), learning_factor(I, _, _) & threshold(T) & I < T)
         if unfulfilled: s1, s2 .
 
     // sanction s1: signal to adjust the valve's flow rate estimation

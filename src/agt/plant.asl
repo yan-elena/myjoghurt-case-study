@@ -1,7 +1,6 @@
 image_threshold(0.3).
-                                    // factors(unit, active, available, image, likelihood)
-factors(unit, true, true, 1, 1).    //factors of the unit agent with its active/removed state, image and likelihood
-reduce_times(unit, 0).
+                                    // factors(unit, active, available, image, likelihood, count_reduce_times)
+factors(unit, true, true, 1, 1, 0).    //factors of the unit agent with its active/removed state, image and likelihood
 
 !start.
 
@@ -14,11 +13,11 @@ reduce_times(unit, 0).
     <-  .println("received order: ", LQ, " quantity: ", N);
         .println("decide which unit agent to assign the order...");
 
-        ?factors(U, true, true, I, L);      //select an active and available unit agent
+        ?factors(U, true, true, I, L, T);      //select an active and available unit agent
 
         .println("selected agent to handle the order: ", U);
 
-        -+factors(U, true, false, I, L);    //update unit availability
+        -+factors(U, true, false, I, L, 0);    //update unit availability
         +order_status(U, LQ, N, 0, MN, MX). //start the filling process
 
 -!order(LQ, N, MN, MX)
@@ -39,9 +38,8 @@ reduce_times(unit, 0).
 +!update_factors(U, X, L) : fill_bottle(U, LQ, N, X, MN, MX) &  L>=MN & L<=MX
     <-  .println("**** S0 - update_factors for ",U," ****");
 
-        ?factors(U, S, A, I, LI);
-        -+factors(U, S, A, I + 0.2, LI);                //update unit images
-        -+reduce_times(U, 0);                           //reset the count of reducing image
+        ?factors(U, S, A, I, K, T);
+        -+factors(U, S, A, I + 0.2, K, T);             //update unit images
 
         .println("update unit image: ", I + 0.2);
 
@@ -52,8 +50,8 @@ reduce_times(unit, 0).
 +!update_factors(U, X, L) : fill_bottle(U, LQ, N, X, MN, MX)
     <-  .println("**** S0 - update_factors for ",U,"****");
 
-        ?factors(U, S, A, I, LI);
-        -+factors(U, S, A, I - 0.2, LI);                 //update unit factors
+        ?factors(U, S, A, I, K, T);
+        -+factors(U, S, A, I - 0.2, K, T);                 //update unit factors
 
         .println("update unit image: ", I - 0.2);
 
@@ -61,7 +59,7 @@ reduce_times(unit, 0).
 
 
 +sanction(Ag, fill_next_bottle(U, LQ, L, X))
-    <-  .println("**** SANCTION S0: bottle ", X, " completed");
+    <-  .println("--------- bottle ", X, " completed ------");
         ?order_status(U, LQ, N, _, MN, MX);
         -+order_status(U, LQ, N, X, MN, MX).            // update order status, fill next bottle
 
@@ -70,14 +68,12 @@ reduce_times(unit, 0).
 
 +sanction(Ag, reduce_likelihood(U)) : .my_name(Ag)
     <-  .println("**** SANCTION S3: reduce unit's likelihood");
-        ?factors(U, S, A, I, L);
-        -+factors(U, S, A, I, L - 0.2);
-        ?reduce_times(U, T);
-        -+reduce_times(U, T+1);
+        ?factors(U, S, A, I, L, T);
+        -+factors(U, S, A, I, L-0.2, T+1);
 
-        .println("likelihood: ",  L - 0.2, " reduce times: ", T+1);
+        .println("likelihood: ",  L-0.2, " reduce times: ", T+1);
 
-        .println("next bottle");
+        .println("--------- bottle ", X, " completed ---------");
         ?order_status(U, LQ, N, C, MN, MX);
         -+order_status(U, LQ, N, C + 1, MN, MX).        //update the order status
 
@@ -85,15 +81,14 @@ reduce_times(unit, 0).
 
 +sanction(Ag, remove_unit(U)) : .my_name(Ag)
     <-  .println("**** SANCTION S4: remove unit");
-        ?factors(U, _, A, I, L);
-        -+factors(U, false, A, I, L);
+        ?factors(U, _, A, I, L, T);
+        -+factors(U, false, A, I, L, T);
 
         .println("ALARM: unit agent removed ").
 
 
 +active(obligation(Ag,Norm,What,Deadline)) : .my_name(Ag)
-    <-  .println("----------------------");
-        .print("obliged to ",obligation(Ag,Norm,What,Deadline));
+    <-  .print("obliged to ",obligation(Ag,Norm,What,Deadline));
         !What.
 
 +fulfilled(O) <- .print("Fulfilled ",O).
