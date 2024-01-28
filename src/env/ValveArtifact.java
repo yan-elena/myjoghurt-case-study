@@ -13,7 +13,6 @@ public class ValveArtifact extends Artifact {
     public void init(int estimation) {
         this.estimation = estimation;
         this.random = new Random();
-        defineObsProperty("level", 0, 0);
     }
 
     @OPERATION
@@ -30,20 +29,25 @@ public class ValveArtifact extends Artifact {
 
         int level = random.nextInt(estimation - 10, estimation + 10);
         log("filled, measuring level: " + level + " mm");
-        ObsProperty levelObsProp = getObsProperty("level");
-        levelObsProp.updateValue(0, index);
-        levelObsProp.updateValue(1, level);
+
+        if(hasObsProperty("level")) {
+            ObsProperty levelObsProp = getObsProperty("level");
+            levelObsProp.updateValue(0, index);
+            levelObsProp.updateValue(1, level);
+        } else {
+            defineObsProperty("level", index, level);
+        }
     }
 
     @OPERATION
     void selfCleaning() {
-        log("...start self cleaning routine");
+        log("...start cleaning");
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        log("...finish self cleaning routine");
+        log("...finish cleaning");
     }
 
     @OPERATION

@@ -2,7 +2,7 @@ unfulfilled_count(0).
 deviation_factor(positive, 0). // deviation factor with polarity and magnitude
 learning_factor(1, 0, 1). // learning factor with the image, frequency and efficacy
 threshold(0.9).
-adjust_times(0).
+adjust_times(3).
 filling(0).
 
 !start.
@@ -56,11 +56,11 @@ filling(0).
 // self cleaning sanction
 
 +sanction(Ag, self_cleaning) : .my_name(Ag)
-    <-  .println("**** SANCTION S2: activate valve's self cleaning routing");
+    <-  .println("**** SANCTION S2: activate valve's cleaning routing");
         selfCleaning;
         .println("finish cleaning");
         ?fill_bottle(LQ, N, _, _);
-        ?level(N, L);
+        ?level(N, L).
         //.send(plant, tell, completed_bottle(Ag, LQ, L, N)). //todo check
 
 // adjust flow rate sanction
@@ -75,7 +75,7 @@ filling(0).
         -+adjust_times(T+1);
         .println("number of consecutive adjustments executed: ", T+1);
         ?level(N, L);
-        ?fill_bottle(LQ, N, _, _);
+        ?fill_bottle(LQ, N, _, _).
         //.send(plant, tell, completed_bottle(Ag, LQ, L, N)). //todo check
 
 +!update_negative_factors(LQ, N, L, M)       // liquid, number, level, magnitude
