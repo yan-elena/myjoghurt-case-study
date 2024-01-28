@@ -1,15 +1,14 @@
 unfulfilled_count(0).
-deviation_factor(positive, 0). // deviation factor with polarity and magnitude
-learning_factor(1, 0, 1). // learning factor with the image, frequency and efficacy
-threshold(0.9).
-adjust_times(3).
-filling(0).
+deviation_factor(positive, 0).  // deviation factor with polarity and magnitude
+learning_factor(1, 0, 1).       // learning factor with the image, frequency and efficacy
+threshold(0.7, 3).                 // image and adjustment count threshold
+adjust_count(0).
 
 !start.
 
 +!start
-    <-  ?threshold(T);
-        .println("image threshold: ", T);
+    <-  ?threshold(IT, AT);
+        .println("image threshold: ", IT, " adjustment count threshold: ", AT);
         .println("unit agent started") .
 
 +!fill(L, N, MN, MX)
@@ -27,7 +26,7 @@ filling(0).
 // positive sanction, within the range
 +!update_factors(N, L) : fill_bottle(LQ, N, MN, MX) &  L>=MN & L<=MX
     <-  .println("**** S0 - update factors: positive");
-        -+adjust_times(0);                      //reset the count
+        -+adjust_count(0);                      //reset the count
 
         ?learning_factor(I, _, E);
         ?unfulfilled_count(C);
@@ -71,8 +70,8 @@ filling(0).
         getFlowRateEstimation(E);
         updateEstimation(E + M);
 
-        ?adjust_times(T);
-        -+adjust_times(T+1);
+        ?adjust_count(T);
+        -+adjust_count(T+1);
         .println("number of consecutive adjustments executed: ", T+1).
 
 +!update_negative_factors(LQ, N, L, M)       // liquid, number, level, magnitude
@@ -91,7 +90,7 @@ filling(0).
 
 
 +active(obligation(Ag,Norm,What,Deadline)) : .my_name(Ag)
-   <- .print("obliged to ",obligation(Ag,Norm,What,Deadline));
+   <- .print("obliged to ", What);
       !What.
 
 +fulfilled(O) <- .print("Fulfilled ",O).

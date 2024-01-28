@@ -8,14 +8,14 @@ scope unit_norms {
     // norm to update the factors when the bottle is filled
     norm n2: level(X, L) & .my_name(U)
         // update the factors and is unfulfilled if the image is below a threshold
-        -> obligation(U, n2, update_factors(X, L), learning_factor(I, _, _) & threshold(T) & I < T)
+        -> obligation(U, n2, update_factors(X, L), learning_factor(I, _, _) & threshold(T, _) & I < T)
         if unfulfilled: s1, s2 .
 
     // sanction s1: signal to adjust the valve's flow rate estimation
-    sanction-rule s1 : adjust_times(T) & T < 3 & .my_name(U)
+    sanction-rule s1 : adjust_count(C) & threshold(_, T) & C < T & .my_name(U)
         ->  sanction(U, adjust_flow_rate) .
 
     // sanction s2: signal to activate the valve's self cleaning routine
-    sanction-rule s2: adjust_times(T) & T >= 3 & .my_name(U)
+    sanction-rule s2: adjust_count(C) & threshold(_, T) & C >= T & .my_name(U)
         -> sanction(U, self_cleaning) .
 }

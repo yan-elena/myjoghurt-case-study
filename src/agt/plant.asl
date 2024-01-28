@@ -88,7 +88,7 @@ factors(unit, true, true, 1, 1, 0).    //factors of the unit agent with its acti
 
 
 +active(obligation(Ag,Norm,What,Deadline)) : .my_name(Ag)
-    <-  .print("obliged to ",obligation(Ag,Norm,What,Deadline));
+    <-  .print("obliged to ", What);
         !What.
 
 +fulfilled(O) <- .print("Fulfilled ",O).
