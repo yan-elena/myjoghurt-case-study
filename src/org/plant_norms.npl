@@ -1,12 +1,12 @@
 scope plant_norms {
 
     // order_status(unit_agent, liquid_type, order_quantity, current_number, min_level, max_level)
-    norm n1: order_status(U, LQ, N, C, MN, MX) & C < N & .my_name(P)
-        -> obligation(P, n1, fill_bottle(U, LQ, N, C + 1, MN, MX), level(C, L) & (L<MN | L>MX)) .
+    norm n1: order_status(U, LQ, N, X, MN, MX) & X < N & .my_name(P)
+        -> obligation(P, n1, fill_bottle(U, LQ, N, X + 1, MN, MX), level(X, L) & (L<MN | L>MX)) .
 
     // when unit agent completed filling the bottle, a norm is for updating its factors
     norm n2: completed_bottle(U, LQ, L, X) & .my_name(P)
-        -> obligation(P, n2, update_factors(U, X, L), factors(U, X, _, _, I, _, _) & threshold(T, _) & I < T)
+        -> obligation(P, n2, update_factors(U, X, L), (L<MN | L>MX) & factors(U, X, _, _, I, _, _) & threshold(T, _) & I < T)
         if fulfilled: s0(U, LQ, L, X)
         if unfulfilled: s3(U, X), s4(U, X).
 

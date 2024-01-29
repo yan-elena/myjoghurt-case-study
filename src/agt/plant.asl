@@ -1,6 +1,5 @@
 threshold(0.7, 5).                      // image and reduction count threshold
-factors(unit, 0, true, true, 1, 1, 0).  // factors of the unit agent with its active/removed state, image and likelihood
-                                        // factors(unit, active, available, image, likelihood, count_reduce_times)
+factors(unit, 0, true, true, 1, 1, 0).  // factors(unit, active, available, image, likelihood, count_reduce_times)
 !start.
 
 +!start
@@ -39,7 +38,7 @@ factors(unit, 0, true, true, 1, 1, 0).  // factors of the unit agent with its ac
     <-  .println("**** update positive factors for ",U," ****");
 
         ?factors(U, X-1, S, A, I, K, T);
-        -+factors(U, X, S, A, I + 0.05, K, T);           //update unit images
+        -+factors(U, X, S, A, I + 0.05, K, 0);           //update unit images
 
         .println("update unit image: ", I + 0.05);
 

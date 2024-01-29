@@ -25,7 +25,7 @@ threshold(0.8, 3).                 // image and adjustment count threshold
 
         ?learning_factor(X-1, I, _, E, _);
         ?unfulfilled_count(C);
-        -+learning_factor(X, I+0.1, C/X, E, 0);      //update the learning factor
+        -+learning_factor(X, I+0.1, C/X, E, 0);    //update the learning factor
         -+deviation_factor(X, "positive", 0);      //update the deviation factor
 
         .println("update deviation factor: positive, 0");
@@ -59,9 +59,11 @@ threshold(0.8, 3).                 // image and adjustment count threshold
 // SANCTIONS
 
 // self cleaning sanction
-+sanction(Ag, self_cleaning) : .my_name(Ag)
++sanction(Ag, self_cleaning(X)) : .my_name(Ag)
     <-  .println("**** SANCTION S2: activate valve's cleaning routing");
         selfCleaning;
+        ?learning_factor(X, I, F, E, _);
+        -+learning_factor(X, I, F, E, 0);     //reset the adjustment count
         .println("finish cleaning").
 
 // adjust flow rate sanction
