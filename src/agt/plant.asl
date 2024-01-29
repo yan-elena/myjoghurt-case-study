@@ -26,7 +26,8 @@ factors(unit, true, true, 1, 1, 0).     //factors of the unit agent with its act
         !order(LQ, N, MN, MX).
 
 +!fill_bottle(U, LQ, N, X, MN, MX)
-    <-  .send(U, tell, fill_bottle(LQ, X, MN, MX));  //tell the unit agent to fill the bottle X with liquid LQ in the range MN-MX
+    <-  .println("--------- fill bottle ", X, " ------");
+        .send(U, tell, fill_bottle(LQ, X, MN, MX));  //tell the unit agent to fill the bottle X with liquid LQ in the range MN-MX
         .println("send order to ", U, " agent to fill the bottle ", X).
 
 +completed_bottle(U, LQ, L, X) : order_status(U, LQ, N, X-1, MN, MX)   //unit agent has completed the bottle
@@ -58,8 +59,7 @@ factors(unit, true, true, 1, 1, 0).     //factors of the unit agent with its act
 
 
 +sanction(Ag, fill_next_bottle(U, LQ, L, X))
-    <-  .println("--------- bottle ", X, " completed ------");
-        ?order_status(U, LQ, N, _, MN, MX);
+    <-  ?order_status(U, LQ, N, _, MN, MX);
         -+order_status(U, LQ, N, X, MN, MX).            // update order status, fill next bottle
 
 
@@ -72,7 +72,6 @@ factors(unit, true, true, 1, 1, 0).     //factors of the unit agent with its act
 
         .println("likelihood: ",  L-0.2, " reduce times: ", T+1);
 
-        .println("--------- bottle ", X, " completed ---------");
         ?order_status(U, LQ, N, C, MN, MX);
         -+order_status(U, LQ, N, C + 1, MN, MX).        //update the order status
 

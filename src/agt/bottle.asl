@@ -2,8 +2,8 @@
 
 +!start
     <-
-       .println("send order('yogurt', 10, 200, 205) to plant agent");
-       .send(plant, achieve, order("yogurt", 10, 200, 205));
+       .println("send order('yogurt', 10, 200, 203) to plant agent");
+       .send(plant, achieve, order("yogurt", 10, 200, 203));
        .
 
 +level(N, L)
