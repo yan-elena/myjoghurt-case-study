@@ -6,8 +6,4 @@
        .send(plant, achieve, order("yogurt", 15, 200, 205));
        .
 
-+level(N, L)
-    <- .println("observed level: ", L, " mm").
-
-
 { include("$jacamoJar/templates/common-cartago.asl") }
