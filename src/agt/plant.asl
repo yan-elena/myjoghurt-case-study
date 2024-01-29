@@ -1,5 +1,5 @@
-threshold(0.4, 5).                      // image and reduction count threshold
-factors(unit, true, true, 1, 1, 0).     //factors of the unit agent with its active/removed state, image and likelihood
+threshold(0.7, 5).                      // image and reduction count threshold
+factors(unit, 0, true, true, 1, 1, 0).  // factors of the unit agent with its active/removed state, image and likelihood
                                         // factors(unit, active, available, image, likelihood, count_reduce_times)
 !start.
 
@@ -9,20 +9,20 @@ factors(unit, true, true, 1, 1, 0).     //factors of the unit agent with its act
         .println("plant agent started") .
 
 +!order(LQ, N, MN, MX)
-    <-  .println("received order: ", LQ, " quantity: ", N);
+    <-  .println("handle order: ", LQ, " quantity: ", N);
         .println("decide which unit agent to assign the order...");
 
-        ?factors(U, true, true, I, L, T);      //select an active and available unit agent
+        ?factors(U, _, true, true, I, L, T);      //select an active and available unit agent
 
         .println("selected agent to handle the order: ", U);
 
-        -+factors(U, true, false, I, L, 0);    //update unit availability
+        -+factors(U, 0, true, false, I, L, 0);    //update unit availability
         +order_status(U, LQ, N, 0, MN, MX). //start the filling process
 
 -!order(LQ, N, MN, MX)
     <-  .println("no unit agent available to handle the order");
-        .wait(1000);
-        .println("try again to send the order...");
+        .wait(5000);
+        .println("try again to assign the order...");
         !order(LQ, N, MN, MX).
 
 +!fill_bottle(U, LQ, N, X, MN, MX)
@@ -38,10 +38,10 @@ factors(unit, true, true, 1, 1, 0).     //factors of the unit agent with its act
 +!update_factors(U, X, L) : fill_bottle(U, LQ, N, X, MN, MX) &  L>=MN & L<=MX
     <-  .println("**** update positive factors for ",U," ****");
 
-        ?factors(U, S, A, I, K, T);
-        -+factors(U, S, A, I + 0.2, K, T);             //update unit images
+        ?factors(U, X-1, S, A, I, K, T);
+        -+factors(U, X, S, A, I + 0.05, K, T);           //update unit images
 
-        .println("update unit image: ", I + 0.2);
+        .println("update unit image: ", I + 0.05);
 
         +update_factors(U, X, L).                       //fulfilled obligation
 
@@ -50,10 +50,10 @@ factors(unit, true, true, 1, 1, 0).     //factors of the unit agent with its act
 +!update_factors(U, X, L) : fill_bottle(U, LQ, N, X, MN, MX)
     <-  .println("**** update negative factors for ",U,"****");
 
-        ?factors(U, S, A, I, K, T);
-        -+factors(U, S, A, I - 0.2, K, T);                 //update unit factors
+        ?factors(U, X-1, S, A, I, K, T);
+        -+factors(U, X, S, A, I - 0.05, K, T);           //update unit factors
 
-        .println("update unit image: ", I - 0.2);
+        .println("update unit image: ", I - 0.05);
 
         +update_factors(U, X, L).                       //fulfilled obligation
 
@@ -67,10 +67,10 @@ factors(unit, true, true, 1, 1, 0).     //factors of the unit agent with its act
 
 +sanction(Ag, reduce_likelihood(U)) : .my_name(Ag)
     <-  .println("**** SANCTION S3: reduce unit's likelihood");
-        ?factors(U, S, A, I, L, T);
-        -+factors(U, S, A, I, L-0.2, T+1);
+        ?factors(U, X, S, A, I, L, T);
+        -+factors(U, X, S, A, I, L-0.05, T+1);
 
-        .println("likelihood: ",  L-0.2, " reduce times: ", T+1);
+        .println("likelihood: ",  L-0.05, " reduce times: ", T+1);
 
         ?order_status(U, LQ, N, C, MN, MX);
         -+order_status(U, LQ, N, C + 1, MN, MX).        //update the order status
@@ -79,10 +79,13 @@ factors(unit, true, true, 1, 1, 0).     //factors of the unit agent with its act
 
 +sanction(Ag, remove_unit(U)) : .my_name(Ag)
     <-  .println("**** SANCTION S4: remove unit");
-        ?factors(U, _, A, I, L, T);
-        -+factors(U, false, A, I, L, T);
+        ?factors(U, X, _, A, I, L, T);
+        -+factors(U, X, false, A, I, L, T);
 
-        .println("ALARM: unit agent removed ").
+        .println("ALARM: unit agent removed ");
+
+        ?order_status(U, LQ, N, C, MN, MX);
+        !order(LQ, N-C, MN, MX).
 
 
 +active(obligation(Ag,Norm,What,Deadline)) : .my_name(Ag)

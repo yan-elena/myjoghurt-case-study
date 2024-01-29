@@ -3,19 +3,19 @@ scope unit_norms {
     // norm for filling a single bottle X with the liquid type LQ within the range MN-MX
     norm n1: fill_bottle(LQ, X, MN, MX) & .my_name(U)
         // obligation to fill the bottle within the MN-MX range
-        -> obligation(U, n1, fill(LQ, X, MN, MX), level(C, L) & (L<MN | L>MX)) .
+        -> obligation(U, n1, fill(LQ, X, MN, MX), level(X, L) & (L<MN | L>MX)) .
 
     // norm to update the factors once the bottle has been filled
     norm n2: level(X, L) & .my_name(U)
         // obligation to update the learning and deviation factors, unfulfilled if the image is below a threshold
-        -> obligation(U, n2, update_factors(X, L), learning_factor(I, _, _) & threshold(T, _) & I < T)
-        if unfulfilled: s1, s2 .
+        -> obligation(U, n2, update_factors(X, L), deviation_factor(X, "negative", _) & learning_factor(X, I, _, _, _) & threshold(T, _) & I < T)
+        if unfulfilled: s1(X), s2(X) .
 
     // sanction s1: signal to the valve to adjust the estimated flow rate
-    sanction-rule s1 : adjust_count(C) & threshold(_, T) & C < T & .my_name(U)
-        ->  sanction(U, adjust_flow_rate) .
+    sanction-rule s1(X) : learning_factor(X, _, _, _, C) & threshold(_, T) & C < T & .my_name(U)
+        ->  sanction(U, adjust_flow_rate(X)) .
 
     // sanction s2: signal to the valve to activate the self cleaning routine
-    sanction-rule s2: adjust_count(C) & threshold(_, T) & C >= T & .my_name(U)
+    sanction-rule s2(X): learning_factor(X, _, _, _, C) & threshold(_, T) & C >= T & .my_name(U)
         -> sanction(U, self_cleaning) .
 }
