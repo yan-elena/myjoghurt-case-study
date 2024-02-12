@@ -1,4 +1,4 @@
-scope plant_norms {
+scope plant_de_jure {
 
     // norm to fill a bottle until the ordered quantity is reached
     // order_status(unit_agent, liquid_type, order_quantity, current_number, min_level, max_level)

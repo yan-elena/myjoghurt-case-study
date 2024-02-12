@@ -1,4 +1,4 @@
-scope unit_norms {
+scope unit_de_jure {
 
     // norm for filling a single bottle X with the liquid type LQ within the range MN-MX
     norm n1: fill_bottle(LQ, X, MN, MX) & .my_name(U)
