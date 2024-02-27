@@ -1,1 +1,2 @@
-# myjoghurt-case-study
+# MyJoghurt Case Study
+Here we present a case study illustrating the practical potential of the extended normative programming language [NPL(s)](https://github.com/moise-lang/npl) with sanction integrated into the normative agent architecture. The use case is focused on improving the robustness of agents’ decision-making in a production automation system. We took as reference the industrial use case of the laboratory plant myJoghurt presented in the paper "Increasing Robustness of Agents’ Decision-Making in Production Automation using Sanctioning" [[link]](https://ieeexplore.ieee.org/document/10217852).
