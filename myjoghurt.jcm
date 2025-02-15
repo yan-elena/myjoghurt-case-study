@@ -1,11 +1,11 @@
-mas sanction_demo {
+mas myjoghurt {
 
     agent plant {
-        ag-class: npl.NormativeAg("src/npl/plant_norms.npl")
+        ag-class: npl.NormativeAg("src/npl/plant_de_jure.npl")
     }
 
     agent unit {
-        ag-class: npl.NormativeAg("src/npl/unit_norms.npl")
+        ag-class: npl.NormativeAg("src/npl/unit_de_jure.npl")
         join: plant
         focus: valve
     }
